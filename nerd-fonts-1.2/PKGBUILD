@@ -1,0 +1,33 @@
+# Maintainer: Julien Chappuis <jubijub at gmail dot com>
+pkgname=nerd-fonts-mono-collection
+pkgver=1.2.0
+pkgrel=1
+pkgdesc="Patched fonts (DejaVuSans, FiraCode, Inconsolata, SourceCodePro) from the nerd-fonts library"
+arch=("any")
+url="https://github.com/ryanoasis/nerd-fonts"
+license=('MIT')
+depends=('fontconfig')
+provides=('nerd-fonts-inconsolata')
+conflicts=('nerd-fonts-git' 'nerd-fonts-complete')
+groups=("nerd-fonts")
+source=("https://github.com/ryanoasis/nerd-fonts/releases/download/v$pkgver/DejaVuSansMono.zip"
+	"https://github.com/ryanoasis/nerd-fonts/releases/download/v$pkgver/FiraCode.zip"
+	"https://github.com/ryanoasis/nerd-fonts/releases/download/v$pkgver/Inconsolata.zip"
+	"https://github.com/ryanoasis/nerd-fonts/releases/download/v$pkgver/SourceCodePro.zip"
+        "https://github.com/ryanoasis/nerd-fonts/raw/v$pkgver/LICENSE")
+sha1sums=('60bddfdd55d493ef5044737ee0f7e1d40119d2fc'
+	  'a5eee19b7bb301e155de4988758ccfa2b1032c21'
+	  'aa915b4594af256ffda8fb1f7a9dd8ffeb2bb367'
+	  '29b3134067234845f08404df4c4f96d0f4ce962a'
+          '92fdad3c8babc0473da5f03e41fb1151417ab386')
+
+package() {
+  install -d "${pkgdir}/usr/share/fonts/TTF"
+  install -d "${pkgdir}/usr/share/fonts/OTF"
+  rm "${srcdir}/"*"Windows Compatible.ttf"
+  rm "${srcdir}/"*"Windows Compatible.otf"
+  
+  install -Dm644 "${srcdir}/"*.ttf "${pkgdir}/usr/share/fonts/TTF"
+  install -Dm644 "${srcdir}/"*.otf "${pkgdir}/usr/share/fonts/OTF"
+  install -Dm644 "${srcdir}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}"
+}
