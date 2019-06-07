@@ -1,0 +1,20 @@
+{
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "editor.fontLigatures": true,
+    "editor.fontFamily": "'FuraCode Nerd Font Mono'",
+    "workbench.colorTheme": "One Dark Pro",
+    "workbench.iconTheme": "vscode-icons",
+    "spellright.language": [
+        "English (American)"
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ],
+    "markdownlint.config": {
+        "default": true,
+        "MD025": false,
+    }
+}

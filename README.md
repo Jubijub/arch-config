@@ -24,6 +24,12 @@ The main configuration file for zsh
 * Enables and configures Powerlevel9K zsh theme
 * Defines a few aliases for `ls` mostly
 
+### settings.json
+
+Visual Studio Code main config file
+
+* Still a work in progress
+
 ### 20-nvidia.conf
 
 XOrg config file that supports my SLI / dual monitor configuration.
