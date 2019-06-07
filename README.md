@@ -44,3 +44,7 @@ Download the package locally, and install with `sudo pacman -U [package name]`
 ## Scripts
 
 Legacy scripts which were an attempt to do an automated unattended install of Ubuntu 17.10.
+
+## ttf-ms-win10
+
+Commented version of the `ttf-ms-win10` Arch linux [Windows 10 fonts package](https://aur.archlinux.org/packages/ttf-ms-win10/) to make it easier to spot checksum errors while installing. Use as the original : download the fonts in the same folders as the MAKEPKG file, and `makepkg`.
