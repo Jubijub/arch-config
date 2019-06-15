@@ -4,7 +4,7 @@ autoload -Uz compinit && compinit -i
 kitty + complete setup zsh | source /dev/stdin
 
 #Enable colors
-eval $( dircolors -b $HOME/.dircolors )
+eval $( dircolors -b $HOME/.LS_COLORS )
 
 #Enables history saving
 HISTFILE=~/.histfile
