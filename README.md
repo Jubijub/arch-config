@@ -8,6 +8,11 @@ I made this project public. Feel free to copy those scripts, but use at your own
 
 ## dotfiles
 
+### gpg-ssh
+
+* `.pam_environment` : disables GNOME keyring ssh-agent, and sets `SSH_AUTH_SOCK` to gpg-agent
+* `gpg-agent.conf` : config file for `gpg-agent`
+
 ### hooks
 
 Pacman hook files.
