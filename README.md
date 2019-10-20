@@ -8,6 +8,20 @@ I made this project public. Feel free to copy those scripts, but use at your own
 
 ## dotfiles
 
+### gpg-ssh
+
+* `.pam_environment` : disables GNOME keyring ssh-agent, and sets `SSH_AUTH_SOCK` to gpg-agent
+* `gpg-agent.conf` : config file for `gpg-agent`
+* `gpg.conf` : ensures the `gpg-agent` is used
+
+### hooks
+
+Pacman hook files.
+
+* `mirrorupgrade.hook` : triggers `reflector` to upgrade pacman mirrorlist after each pacman-mirrorlist package update (also cleans the mirrorlist.pacnew)
+* `nvidia.hook` : triggers `mkinitcpio` after each nvidia drivers package update
+* `systemd-boot.hook` : triggers a systemd-boot update after each systemd-boot package update
+
 ### zsh configuration
 
 #### .zshenv
@@ -24,15 +38,23 @@ The main configuration file for zsh
 * Enables and configures Powerlevel9K zsh theme
 * Defines a few aliases for `ls` mostly
 
+### 20-nvidia.conf
+
+XOrg config file that supports my SLI / dual monitor configuration.
+
+### kitty.conf
+
+Config file for kitty term emulator. Configures colors to match One Dark theme and font to use ligature font Fira Code.
+
+### locale.conf
+
+locale.conf file setting en-US as lang, and en-GB as a locale.
+
 ### settings.json
 
 Visual Studio Code main config file
 
 * Still a work in progress
-
-### 20-nvidia.conf
-
-XOrg config file that supports my SLI / dual monitor configuration.
 
 ## nerd-fonts-1.2
 
