@@ -7,7 +7,6 @@ path=(
     /usr/lib/ccache/bin
     /opt/cuda/bin
     $HOME/.npm-packages/bin
-    .
     $path[@])
 
 # Environment variables

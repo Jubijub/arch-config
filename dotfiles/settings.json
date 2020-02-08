@@ -1,20 +1,29 @@
 {
-    "editor.suggestSelection": "first",
-    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-    "editor.fontLigatures": true,
-    "editor.fontFamily": "FuraCode Nerd Font Mono",
-    "workbench.colorTheme": "One Dark Pro",
-    "workbench.iconTheme": "vscode-icons",
-    "spellright.language": [
-        "English (American)"
-    ],
-    "spellright.documentTypes": [
-        "markdown",
-        "latex",
-        "plaintext"
-    ],
-    "markdownlint.config": {
-        "default": true,
-        "MD025": false
-    }
+  "editor.suggestSelection": "first",
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "editor.fontLigatures": true,
+  "editor.fontFamily": "JetBrainsMono Nerd Font",
+  "workbench.colorTheme": "One Dark Pro",
+  "workbench.iconTheme": "vscode-icons",
+  "spellright.language": ["English (American)"],
+  "spellright.documentTypes": ["markdown", "latex", "plaintext"],
+  "markdownlint.config": {
+    "default": true,
+    "MD025": false
+  },
+  "C_Cpp.default.cppStandard": "c++11",
+  "C_Cpp.default.intelliSenseMode": "gcc-x64",
+  "files.exclude": {
+    "**/.classpath": true,
+    "**/.project": true,
+    "**/.settings": true,
+    "**/.factorypath": true
+  },
+  "clangd.path": "/bin/clangd",
+  "clang-format.executable": "/bin/clang-format",
+  "editor.tabSize": 2,
+  "[cpp]": {
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
+  "editor.formatOnSave": true
 }
