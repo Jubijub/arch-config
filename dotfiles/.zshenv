@@ -25,3 +25,6 @@ fi
 
 # Set GPG TTY
 export GPG_TTY=$(tty)
+
+# fzf
+export FZF_DEFAULT_OPTS='--height 20% --border'

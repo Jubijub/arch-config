@@ -36,6 +36,10 @@ source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
 #kitty config
 kitty + complete setup zsh | source /dev/stdin
 
+#fzf
+source /usr/share/fzf/key-bindings.zsh
+source /usr/share/fzf/completion.zsh
+
 #POWERLEVEL9K config
 #Note : color are meant to be used with a Terminal using One Dark color scheme
 POWERLEVEL9K_MODE='nerdfont-complete'
