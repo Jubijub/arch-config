@@ -2,25 +2,24 @@
 
 ## Introduction
 
-This project contains various files I use to configure my Linux ([Arch Linux](https://www.archlinux.org/)), my shell ([zsh](https://www.zsh.org/) along with its [Powerline theme](https://github.com/bhilburn/powerlevel9k)) and my terminal client ([kitty](https://sw.kovidgoyal.net/kitty/)).
+This project contains various files I use to configure my Linux ([Arch Linux](https://www.archlinux.org/)), my shell ([Fish](https://fishshell.com/) and my terminal client ([kitty](https://sw.kovidgoyal.net/kitty/)).
 
-I made this project public. Feel free to copy those scripts, but use at your own risks.
-TEST
+I made this project public. Feel free to copy those scripts, but use at your own risks.g
 
 ## dotfiles
 
 ### gpg-ssh
 
-* `.pam_environment` : disables GNOME keyring ssh-agent, and sets `SSH_AUTH_SOCK` to gpg-agent
+* `.pam_environment` : disables GNOME keyring ssh-agent
 * `gpg-agent.conf` : config file for `gpg-agent`
-* `gpg.conf` : ensures the `gpg-agent` is used
+* `gpg.conf` : configuration for Yubikey usage, enabling SSH-agent
 
 ### hooks
 
 Pacman hook files.
 
 * `mirrorupgrade.hook` : triggers `reflector` to upgrade pacman mirrorlist after each pacman-mirrorlist package update (also cleans the mirrorlist.pacnew)
-* `nvidia.hook` : triggers `mkinitcpio` after each nvidia drivers package update
+* `nvidia.hook` : triggers `mkinitcpio` after each nvidia / nvidia-lts drivers package update
 * `systemd-boot.hook` : triggers a systemd-boot update after each systemd-boot package update
 
 ### zsh configuration
@@ -45,24 +44,11 @@ XOrg config file that supports my SLI / dual monitor configuration.
 
 ### kitty.conf
 
-Config file for kitty term emulator. Configures colors to match One Dark theme and font to use ligature font Fira Code.
+Config file for kitty term emulator. Configures colors to match One Dark theme and font to use ligature font Jetbrains Mono.
 
 ### locale.conf
 
-locale.conf file setting en-US as lang, and en-GB as a locale.
-
-### settings.json
-
-Visual Studio Code main config file
-
-* Still a work in progress
-
-## nerd-fonts-1.2
-
-My home made Arch package to install a selection of monospaced fonts with [Nerd fonts](https://github.com/ryanoasis/nerd-fonts) patches. Arch provides `2.0.0` versions of these fonts, but nerd fonts `2.0.0` has an [issue with monospaced fonts](https://github.com/ryanoasis/nerd-fonts/issues/323) (workaround to use `1.2.0` is described in [`#270`](https://github.com/ryanoasis/nerd-fonts/issues/270)), that make them unrecognized by software that use those fonts (Konsole, Visual Studio Code, Kitty, etc...).
-`1.2.0` is the previous version, and works just fine. I don't publish it in AUR because I am not sure how this would work with `2.0.0` versions of these fonts.
-
-Download the package locally, and install with `sudo pacman -U [package name]`
+locale.conf file setting en-US as lang, and fr_CH as a locale.
 
 ## Scripts
 
@@ -70,4 +56,4 @@ Legacy scripts which were an attempt to do an automated unattended install of Ub
 
 ## ttf-ms-win10
 
-Commented version of the `ttf-ms-win10` Arch linux [Windows 10 fonts package](https://aur.archlinux.org/packages/ttf-ms-win10/) to make it easier to spot checksum errors while installing. Use as the original : download the fonts in the same folders as the MAKEPKG file, and `makepkg`.
+Custom version of the `ttf-ms-win10` Arch linux [Windows 10 fonts package](https://aur.archlinux.org/packages/ttf-ms-win10/) with sha256 checksums matching my Win10 version fonts. Use as the original : download the fonts in the same folders as the MAKEPKG file, and `makepkg`.
