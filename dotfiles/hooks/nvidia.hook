@@ -3,7 +3,8 @@ Operation=Install
 Operation=Upgrade
 Operation=Remove
 Type=Package
-Target=nvidia-dkms
+Target=nvidia
+Target=nvidia-lts
 
 [Action]
 Depends=mkinitcpio
