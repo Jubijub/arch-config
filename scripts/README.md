@@ -1,0 +1,1 @@
+Those scripts are legacy attempts to automate ubuntu install.
