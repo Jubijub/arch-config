@@ -5,6 +5,7 @@
 This project contains various files I use to configure my Linux ([Arch Linux](https://www.archlinux.org/)), my shell ([zsh](https://www.zsh.org/) along with its [Powerline theme](https://github.com/bhilburn/powerlevel9k)) and my terminal client ([kitty](https://sw.kovidgoyal.net/kitty/)).
 
 I made this project public. Feel free to copy those scripts, but use at your own risks.
+TEST
 
 ## dotfiles
 
