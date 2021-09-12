@@ -8,14 +8,19 @@ if status is-interactive
     set -gx EDITOR vim
 
     ## Gruvbox theme
+    set brorange d65d0e
+    set orange af3a03
+
     set fish_color_autosuggestion brblack
     set fish_color_command brcyan
     set fish_color_comment white
-    set fish_color_end brmagenta
+    set fish_color_end $orange --bold
     set fish_color_error brred
-    set fish_color_keyword brblue
+    set fish_color_keyword brblue --bold
+    set fish_color_operator $brorange --bold
     set fish_color_param bryellow
     set fish_color_quote brgreen
+    set fish_color_redirection magenta
     
 
     # bat
