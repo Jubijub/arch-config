@@ -7,20 +7,17 @@ if status is-interactive
     set -gx LANG en_US.UTF-8
     set -gx EDITOR vim
 
-    ## Gruvbox theme
-    set brorange d65d0e
-    set orange af3a03
-
+    ## Monokai Pro theme
     set fish_color_autosuggestion brblack
-    set fish_color_command brcyan
+    set fish_color_command brgreen
     set fish_color_comment white
-    set fish_color_end $orange --bold
     set fish_color_error brred
     set fish_color_keyword brblue --bold
-    set fish_color_operator $brorange --bold
-    set fish_color_param bryellow
+    set fish_color_operator brred --bold
+    set fish_color_param magenta
     set fish_color_quote brgreen
     set fish_color_redirection magenta
+    set fish_color_valid_path white --underline
     
 
     # bat

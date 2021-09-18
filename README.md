@@ -28,7 +28,29 @@ Pacman hook files.
 
 Sets the environment variables for zsh, for interactive or non interactive sessions
 
-#### .zshrc
+### 20-nvidia.conf
+
+XOrg config file that supports my SLI / dual monitor configuration.
+
+### kitty.conf
+
+Config file for kitty term emulator. Configures colors to match Monokai Pro theme and font to use ligature font Jetbrains Mono Nerd patched.
+
+### locale.conf
+
+locale.conf file setting en-US as lang, and fr_CH as a locale.
+
+## ttf-ms-win10
+
+Custom version of the `ttf-ms-win10` Arch linux [Windows 10 fonts package](https://aur.archlinux.org/packages/ttf-ms-win10/) with sha256 checksums matching my Win10 version fonts. Use as the original : download the fonts in the same folders as the MAKEPKG file, and `makepkg`.
+
+## Legacy configuration
+
+### Scripts
+
+Legacy scripts which were an attempt to do an automated unattended install of Ubuntu 17.10.
+
+### .zshrc
 
 The main configuration file for zsh
 
@@ -37,23 +59,3 @@ The main configuration file for zsh
 * Persists zsh history in a file (so that `kitty` can browse history of previous sessions)
 * Enables and configures Powerlevel9K zsh theme
 * Defines a few aliases for `ls` mostly
-
-### 20-nvidia.conf
-
-XOrg config file that supports my SLI / dual monitor configuration.
-
-### kitty.conf
-
-Config file for kitty term emulator. Configures colors to match One Dark theme and font to use ligature font Jetbrains Mono.
-
-### locale.conf
-
-locale.conf file setting en-US as lang, and fr_CH as a locale.
-
-## Scripts
-
-Legacy scripts which were an attempt to do an automated unattended install of Ubuntu 17.10.
-
-## ttf-ms-win10
-
-Custom version of the `ttf-ms-win10` Arch linux [Windows 10 fonts package](https://aur.archlinux.org/packages/ttf-ms-win10/) with sha256 checksums matching my Win10 version fonts. Use as the original : download the fonts in the same folders as the MAKEPKG file, and `makepkg`.
