@@ -10,7 +10,6 @@ I made this project public. Feel free to copy those scripts, but use at your own
 
 ### gpg-ssh
 
-* `.pam_environment` : disables GNOME keyring ssh-agent
 * `gpg-agent.conf` : config file for `gpg-agent`
 * `gpg.conf` : configuration for Yubikey usage, enabling SSH-agent
 
