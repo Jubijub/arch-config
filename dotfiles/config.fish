@@ -7,7 +7,7 @@ if status is-interactive
     set -gx LANG en_US.UTF-8
     set -gx EDITOR vim
 
-    ## Monokai Pro theme
+    ## OneDark theme
     set fish_color_autosuggestion brblack
     set fish_color_command brgreen
     set fish_color_comment white
@@ -19,7 +19,6 @@ if status is-interactive
     set fish_color_redirection magenta
     set fish_color_valid_path white --underline
     
-
     # bat
     alias bat "bat --theme=TwoDark"
 
