@@ -21,7 +21,7 @@ if status is-interactive
     
 
     # bat
-    alias bat "bat --theme=gruvbox-dark"
+    alias bat "bat --theme=TwoDark"
 
     # CUDA
     set --path -gxa LD_LIBRARY_PATH /opt/cuda/lib64
@@ -31,7 +31,7 @@ if status is-interactive
     alias lg "exa --header --long --all --icons --git"
 
     # fzf.fish
-    set fzf_preview_file_cmd bat --theme=gruvbox-dark
+    set fzf_preview_file_cmd bat --theme=TwoDark
 
     # Java
     fish_add_path -a /usr/lib/jvm/default/bin 
