@@ -23,12 +23,6 @@ if status is-interactive
     # bat
     alias bat "bat --theme=gruvbox-dark"
 
-    # Conda
-    # >>> conda initialize >>>
-    # !! Contents within this block are managed by 'conda init' !!
-    eval /home/jubi/anaconda3/bin/conda "shell.fish" "hook" $argv | source
-    # <<< conda initialize <<<
-
     # CUDA
     set --path -gxa LD_LIBRARY_PATH /opt/cuda/lib64
 
