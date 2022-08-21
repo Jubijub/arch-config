@@ -8,8 +8,6 @@ fi
 ###################################################################################################
 # ZSH basic configuration
 ###################################################################################################
-#Enable Docker completion
-fpath=(~/.zsh/completion $fpath)
 
 #Autocompletion
 zstyle ':completion:*' menu yes select
@@ -31,53 +29,46 @@ SAVEHIST=$HISTSIZE
 setopt appendhistory
 setopt share_history        #share history between multiple instances of zsh
 
-###################################################################################################
-# Plugins
-###################################################################################################
-#Enable syntax highlighting
-source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
-
-#Enable Fish-like auto-suggestions
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh 
-
-#kitty config
-kitty + complete setup zsh | source /dev/stdin
-
-#fzf
-source /usr/share/fzf/key-bindings.zsh
-source /usr/share/fzf/completion.zsh
-
-#POWERLEVEL9K config
-#Note : color are meant to be used with a Terminal using One Dark color scheme
-POWERLEVEL9K_MODE='nerdfont-complete'
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir dir_writable vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(command_execution_time status virtualenv anaconda docker_machine battery time)
-POWERLEVEL9K_DIR_HOME_BACKGROUND="237"
-POWERLEVEL9K_DIR_HOME_FOREGROUND="006"
-POWERLEVEL9K_DIR_HOME_SUBFOLDER_BACKGROUND="237"
-POWERLEVEL9K_DIR_HOME_SUBFOLDER_FOREGROUND="004"
-POWERLEVEL9K_DIR_DEFAULT_BACKGROUND="237"
-POWERLEVEL9K_DIR_DEFAULT_FOREGROUND="009"
-POWERLEVEL9K_SHORTEN_STRATEGY="truncate_middle"
-POWERLEVEL9K_SHORTEN_DIR_LENGTH=3
-POWERLEVEL9K_STATUS_VERBOSE=false
-POWERLEVEL9K_VCS_CLEAN_BACKGROUND='002'
-POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='003'
-POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND='001'
-
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-#Enable differentiated colors depending on file types
-eval $( dircolors -b $HOME/.LS_COLORS )
-
 #aliases
 alias ls="ls --color"
 alias la="ls -la"
 alias ll="ls -ll"
 alias less="less -R"
 
+###################################################################################################
+# ZSH Plugins
+###################################################################################################
+
+#Enable syntax highlighting
+source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
+
+#Enable Fish-like auto-suggestions
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh 
+
+#fzf
+source /usr/share/fzf/key-bindings.zsh
+source /usr/share/fzf/completion.zsh
+
+#Powerlevel10K
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+#LS_COLORS
+source ~/.local/share/lscolors/lscolors.sh
+
+###################################################################################################
+# Tools config
+###################################################################################################
+
+#kitty config
+kitty + complete setup zsh | source /dev/stdin
+
+
+export GPG_TTY="$(tty)"
+export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+gpgconf --launch gpg-agent
+
 # Refresh gpg-agent tty in case user switches into an X session
 gpg-connect-agent updatestartuptty /bye >/dev/null
+
