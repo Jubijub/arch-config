@@ -27,4 +27,4 @@ fi
 export GPG_TTY=$(tty)
 
 # fzf
-export FZF_DEFAULT_OPTS='--height 20% --border'
+export FZF_DEFAULT_OPTS="--height 20% --border --preview 'bat --style=numbers --color=always --line-range :500 {}'"

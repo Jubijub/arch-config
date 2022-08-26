@@ -30,10 +30,12 @@ setopt appendhistory
 setopt share_history        #share history between multiple instances of zsh
 
 #aliases
-alias ls="ls --color"
-alias la="ls -la"
-alias ll="ls -ll"
+alias exa"exa --color --time-style=long-iso"
+alias ls="exa"
+alias la="ls --long --all --header --icons"
+alias lg="ls --long --all --header --icons --git"
 alias less="less -R"
+alias fd="fd -HI"
 
 ###################################################################################################
 # ZSH Plugins
@@ -53,9 +55,6 @@ source /usr/share/fzf/completion.zsh
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-#LS_COLORS
-source ~/.local/share/lscolors/lscolors.sh
 
 ###################################################################################################
 # Tools config
