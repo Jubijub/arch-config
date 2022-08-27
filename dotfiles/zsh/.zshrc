@@ -1,3 +1,5 @@
+export GPG_TTY=$(tty)
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -8,6 +10,8 @@ fi
 ###################################################################################################
 # ZSH basic configuration
 ###################################################################################################
+#Poetry completion
+fpath+=~/.zfunc # contains a completion file generated from Poetry
 
 #Autocompletion
 zstyle ':completion:*' menu yes select
@@ -41,6 +45,8 @@ alias fd="fd -HI"
 # ZSH Plugins
 ###################################################################################################
 
+### Plugins installed via pacman / paru ###
+
 #Enable syntax highlighting
 source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 
@@ -56,6 +62,9 @@ source /usr/share/fzf/completion.zsh
 source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+### Plugins manually installed ###
+source ~/.local/share/zsh-poetry/poetry.zsh
+
 ###################################################################################################
 # Tools config
 ###################################################################################################
@@ -64,7 +73,6 @@ source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
 kitty + complete setup zsh | source /dev/stdin
 
 
-export GPG_TTY="$(tty)"
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpgconf --launch gpg-agent
 
