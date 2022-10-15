@@ -19,9 +19,18 @@ I describe my system config in this [howto](https://github.com/Jubijub/arch-conf
 
 * [kitty](https://sw.kovidgoyal.net/kitty/) : my favourite terminal emulator : it's fast, it's well documented, it supports ligatures.
 
+
 ### Command line utilities / Development tools
 
+My ZSH installation procedure is described [here](https://github.com/Jubijub/arch-config/wiki/5.Post-installation#configure-zsh).
+
+* [zsh](https://www.zsh.org) : a better alternative to Bash, with strong completion. Eminently themable with powerlevel10k. Note : I do not use oh-my-zsh or any package manager, which keeps my zsh light and predictible.
+  * [Powerlevel10k](https://github.com/romkatv/powerlevel10k) : a fantastic and blazing fast Zsh theme
+  * [Fast-Syntax-highlighting](https://github.com/zdharma-continuum/fast-syntax-highlighting) : on the fly syntax highlighting when typing commands.
+  * [Autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) : fish like autosuggestions based on history
+  * [fzf](https://github.com/junegunn/fzf) : a fuzzy search tool to search command line history. I couldn't live without this.
 * [bat](https://github.com/sharkdp/bat): a replacement to `cat` with syntax highlighting, line numbering, etc...
+* [exa](https://the.exa.website/) : a replacement for `ls` with colors, git aware, highly configurable
 * [neofetch](https://github.com/dylanaraps/neofetch) : command line system information, used for my screenshots.
 * [Poetry](https://python-poetry.org/) : a python packaging and dependency (and virtualenv) manager.
 * [reflector](https://wiki.archlinux.org/title/reflector) : a script that test the speed of Archlinux mirror, and picks the most suitable to overwrite the mirrorlist.
@@ -66,14 +75,3 @@ The file hierarchy mimic the target structure on the disk, so if you find a file
 * `/home/jubi/.p10k.zsh` : my ZSH Powerlevel10k configuration. I suggest you use the `p10k configure` to generate the file, and just use this for reference.
 * `/home/jubi/.xinitrc` and `/home/jubi/.Xresources` : sets my X theme as Catppuccin Machiatto.
 * `/home/jubi/.zshrc` and `/home/jubi/.zshenv` : my .zshrc : see my [howto](https://github.com/Jubijub/arch-config/wiki/5.Post-installation#configure-zsh) on how I configure my ZSH.
-
-
-### .zshrc
-
-The main configuration file for zsh
-
-* Enables zsh autocompletion and syntax highlighting
-* Enables fancy `LS_COLORS` from [trapd00r](https://github.com/trapd00r/LS_COLORS)
-* Persists zsh history in a file (so that `kitty` can browse history of previous sessions)
-* Enables and configures Powerlevel9K zsh theme
-* Defines a few aliases for `ls` mostly
