@@ -6,7 +6,18 @@
 
 This project contains various files I use to configure my Linux OS (https://www.archlinux.org/[Arch Linux]), my shell (https://www.zsh.org/[ZSH]) my terminal client (https://sw.kovidgoyal.net/kitty/[kitty]), and my Window manager (http://www.qtile.org/[Qtile]).
 
-I made this project public. Feel free to copy those scripts, but use at your own risks.
+I nicknamed my workstation *UglyButCool* which reflects my philosophy : I prefer performance over style. My Qtile configuration reflects this : I made it as nice as I could, but I favoured ease of use over style.
+
+Feel free to copy those scripts, but use at your own risks.
+
+## Screenshots
+
+.VScode, Kitty with Powerline10k and Git, Chrome
+image::vscode-git-chrome.png[VScode, Kitty with Powerline10k and Git, Chrome]
+
+.Bat showing config.py, bottom and neofetch
+image::bat_btm_neofetch.png[Bat showing config.py, bottom and neofetch]
+
 
 ## Tools I use
 I describe my system config in this https://github.com/Jubijub/arch-config/wiki/1.Home[howto], so you can see how I install those tools. I mostly use Arch/AUR packages where possible.
@@ -130,3 +141,4 @@ The file hierarchy mimic the target structure on the disk, so if you find a file
 * kbd:[MOD+RETURN] : launches the terminal (Kitty)
 * kbd:[MOD+B] : launches the browser (Chrome)
 * kbd:[MOD+V] : launches VSCode
+* kbd:[MOD+N] : launches file browser (nautilus)

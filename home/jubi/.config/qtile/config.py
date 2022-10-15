@@ -95,6 +95,7 @@ keys = [
     Key([mod], "Return", lazy.spawn("kitty"), desc="Launch terminal"),
     Key([mod], "b", lazy.spawn("google-chrome-beta"), desc="Chrome browser"),
     Key([mod], "v", lazy.spawn("code"), desc="VSCode"),
+    Key([mod], "n", lazy.spawn("nautilus"), desc="Nautilus"),
 ]
 
 icons_path = os.path.expanduser("~") + "/.config/qtile/qtile_icons"
