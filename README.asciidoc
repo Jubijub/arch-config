@@ -1,0 +1,132 @@
+:experimental:
+
+# Linux Config files
+
+## Introduction
+
+This project contains various files I use to configure my Linux OS (https://www.archlinux.org/[Arch Linux]), my shell (https://www.zsh.org/[ZSH]) my terminal client (https://sw.kovidgoyal.net/kitty/[kitty]), and my Window manager (http://www.qtile.org/[Qtile]).
+
+I made this project public. Feel free to copy those scripts, but use at your own risks.
+
+## Tools I use
+I describe my system config in this https://github.com/Jubijub/arch-config/wiki/1.Home[howto], so you can see how I install those tools. I mostly use Arch/AUR packages where possible.
+
+### Themes
+* Color Theme : https://github.com/catppuccin/catppuccin[Catppuccin-Macchiato] - super good looking pastel theme
+* Icon theme : https://github.com/PapirusDevelopmentTeam/papirus-icon-theme[Papirus-Dark]
+* Cursor theme = https://github.com/catppuccin/cursors[Catppuccin-Macchiato-Dark]
+* Font : https://www.jetbrains.com/lp/mono/[Jetbrains Mono] with https://www.nerdfonts.com/[Nerd fonts patch].
+
+### Software
+
+* https://sw.kovidgoyal.net/kitty/[kitty] : my favourite terminal emulator : it's fast, it's well documented, it supports ligatures.
+
+
+### Command line utilities / Development tools
+
+My ZSH installation procedure is described https://github.com/Jubijub/arch-config/wiki/5.Post-installation#configure-zsh[here].
+
+* https://www.zsh.org[zsh] : a better alternative to Bash, with strong completion. Eminently themable with powerlevel10k. Note : I do not use oh-my-zsh or any package manager, which keeps my zsh light and predictible.
+  ** https://github.com/romkatv/powerlevel10k[Powerlevel10k] : a fantastic and blazing fast Zsh theme
+  ** https://github.com/zdharma-continuum/fast-syntax-highlighting[Fast-Syntax-highlighting] : on the fly syntax highlighting when typing commands.
+  ** https://github.com/zsh-users/zsh-autosuggestions[Autosuggestions] : fish like autosuggestions based on history
+  ** https://github.com/junegunn/fzf[fzf] : a fuzzy search tool to search command line history. I couldn't live without this.
+* https://github.com/sharkdp/bat[bat]: a replacement to `cat` with syntax highlighting, line numbering, etc...
+* https://the.exa.website/[exa] : a replacement for `ls` with colors, git aware, highly configurable
+* https://github.com/dylanaraps/neofetch[neofetch] : command line system information, used for my screenshots.
+* https://python-poetry.org/[Poetry] : a python packaging and dependency (and virtualenv) manager.
+* https://wiki.archlinux.org/title/reflector[reflector] : a script that test the speed of Archlinux mirror, and picks the most suitable to overwrite the mirrorlist.
+
+### Desktop environment
+* https://github.com/dunst-project/dunst[dunst] : a customizable notification system
+* https://flameshot.org/[Flameshot] : a screenshot software with good editing capabilities (arrows, frames, text)
+* https://github.com/yshui/picom[picom (picom-git)] : a window compositor which enables gaps, window transparency on a per program basis
+* https://www.qtile.org[qtile] : the Qtile window manager (configured in Python)
+* https://github.com/davatorium/rofi[rofi] : an app launcher and a window switcher.
+
+## Config files
+The file hierarchy mimic the target structure on the disk, so if you find a file in `a/b/c/file.ext`, it should be copied in `/a/b/c/file.ext`.
+
+### etc
+
+* `/etc/pacman.d/hooks` : various hooks for reflector, nvidia, and systemd-boot
+  ** `mirrorupgrade.hook` : triggers `reflector` to upgrade pacman mirrorlist after each pacman-mirrorlist package update (also cleans the mirrorlist.pacnew)
+  ** `nvidia.hook` : triggers `mkinitcpio` after each nvidia / nvidia-lts drivers package update
+  ** `systemd-boot.hook` : triggers a systemd-boot update after each systemd-boot package update
+* `/etc/X11/xorg.conf.d/20-nvidia.conf` : the X.org config that works with my nVidia RTX 3090 and my dual screen setup
+* `/etc/locale.conf` : my wierd locale setup where local is set to fr_CH, but my display language is English.
+* `/etc/resolvconf.conf` : resolvconf config to set Google DNS as the machine DNS.
+
+### home/jubi
+
+* `/home/jubi/.config/bat/*` : sets the bat theme as Catppuccin-machiato (also contains the theme files themselves, from Catppuccin https://github.com/catppuccin/bat[repository])
+* `/home/jubi/.config/dunst/*` : sets the dunst theme as Catppuccin-machiato (from Catppuccin dunst https://github.com/catppuccin/dunst[repository])
+* `/home/jubi/.config/flameshot/*` : instructs Flameshot to save screenshots as PNG in my Downloads folder
+* `/home/jubi/.config/gtk-3.0/*` : GTK 3.0 theme configuration to use the Catppuccin color/cursor, and Papirus-Dark icons.
+* `/home/jubi/.config/kitty/*` : instructs Kitty to use Catppuccin machiatto colors, and Jetbrains Mono Nerd font.
+* `/home/jubi/.config/neofetch/*` : light changes to display more information
+* `/home/jubi/.config/picom/*` : Gaps, window transparency with active window being less opaque
+* `/home/jubi/.config/pypoetry/*`: Python Poetry config instructing to put virtualenvs in a specific folder.
+* `/home/jubi/.config/qtile/*`: 
+  * `qtile_icons`: layout icons matching the catppuccino color theme
+  * `autostart.sh` : configures X (via xrandr) for my dual screen, loads picom, qtile, etc...
+  * `config.py` : my qtile config file
+* `/home/jubi/.config/rofi/*`: Rofi with https://github.com/catppuccin/rofi[catppuccin theme].
+* `/home/jubi/.local/share/backgrounds` : the https://www.deviantart.com/dpcdpc11/art/Beyond-the-Clouds-Wallpaper-Pack-5120x2880px-915981762["Beyond the clouds"] desktop wallaper I use which goes well with Catppuccin colors, courtesy of https://www.deviantart.com/dpcdpc11[dpcdpc11].
+
+* `/home/jubi/.p10k.zsh` : my ZSH Powerlevel10k configuration. I suggest you use the `p10k configure` to generate the file, and just use this for reference.
+* `/home/jubi/.xinitrc` and `/home/jubi/.Xresources` : sets my X theme as Catppuccin Machiatto.
+* `/home/jubi/.zshrc` and `/home/jubi/.zshenv` : my .zshrc : see my https://github.com/Jubijub/arch-config/wiki/5.Post-installation#configure-zsh[howto] on how I configure my ZSH.
+
+## Qtile shortcuts overview
+
+### General
+
+* kbd:[MOD+CTRL+R] : Reloads QTile configuration
+* kbd:[MOD+CTRL+Q] : Quits QTile and returns to Display manager
+* kbd:[MOD+CTRL+SHIFT+Q] : power-off the computer
+* kbd:[MOD+CTRL+SHIFT+R] : restart the computer
+
+### Groups
+
+* kbd:[MOD+1] to kbd:[MOD+4] : displays the group x on the active screen
+* kbd:[MOD+SHIFT+1] to kbd:[MOD+SHIFT+4] : moves the active window to group x
+
+### Change focus
+
+* kbd:[MOD+H] : move focus to the left
+* kbd:[MOD+L] : move focus to the right
+* kbd:[MOD+J] : move focus down
+* kbd:[MOD+K] : move focus up
+* kbd:[MOD+SPACE] : move focus to the next window in the focus ring
+* kbd:[MOD+TAB] : Rofi window switcher
+* kbd:[MOD+SHIFT+.] : move focus to next screen (clicking on the background of the other screen does the same)
+
+### Change layouts
+
+* kbd:[MOD+CTRL+TAB] : toggle between layouts
+
+### Move windows
+
+* kbd:[MOD+SHIFT+H] : move focused window to the left
+* kbd:[MOD+SHIFT+L] : move focused window to the right
+* kbd:[MOD+SHIFT+J] : move focused window  down
+* kbd:[MOD+SHIFT+K] : move focused window up
+
+### Resize windows
+
+* kbd:[MOD+CTRL+H] : grow window to the left
+* kbd:[MOD+CTRL+L] : grow window to the right
+* kbd:[MOD+CTRL+J] : grow window down
+* kbd:[MOD+CTRL+K] : grow window up
+
+* kbd:[MOD+N] : reset all windows sizes
+
+### Launch and close Apps
+
+* kbd:[MOD+W] : closes the focused window
+* kbd:[MOD+R] : opens the prompt widget to launch a command
+* kbd:[MOD+SHIFT+RETURN] : launches Rofi in combined mode
+* kbd:[MOD+RETURN] : launches the terminal (Kitty)
+* kbd:[MOD+B] : launches the browser (Chrome)
+* kbd:[MOD+V] : launches VSCode
