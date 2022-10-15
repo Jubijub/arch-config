@@ -75,3 +75,60 @@ The file hierarchy mimic the target structure on the disk, so if you find a file
 * `/home/jubi/.p10k.zsh` : my ZSH Powerlevel10k configuration. I suggest you use the `p10k configure` to generate the file, and just use this for reference.
 * `/home/jubi/.xinitrc` and `/home/jubi/.Xresources` : sets my X theme as Catppuccin Machiatto.
 * `/home/jubi/.zshrc` and `/home/jubi/.zshenv` : my .zshrc : see my [howto](https://github.com/Jubijub/arch-config/wiki/5.Post-installation#configure-zsh) on how I configure my ZSH.
+
+## Qtile shortcuts overview
+
+### General
+
+kbd:[MOD+CTRL+R] : Reloads QTile configuration
+
+kbd:[MOD+CTRL+Q] : Quits QTile and returns to Display manager
+
+kbd:[MOD+CTRL+SHIFT+Q] : power-off the computer
+
+kbd:[MOD+CTRL+SHIFT+R] : restart the computer
+
+### Groups
+
+kbd:[MOD+1] to kbd:[MOD+4] : displays the group x on the active screen
+
+kbd:[MOD+SHIFT+1] to kbd:[MOD+SHIFT+4] : moves the active window to group x
+
+### Change focus
+
+* kbd:[MOD+H] : move focus to the left
+* kbd:[MOD+L] : move focus to the right
+* kbd:[MOD+J] : move focus down
+* kbd:[MOD+K] : move focus up
+* kbd:[MOD+SPACE] : move focus to the next window in the focus ring
+* kbd:[MOD+TAB] : Rofi window switcher
+* kbd:[MOD+SHIFT+.] : move focus to next screen (clicking on the background of the other screen does the same)
+
+### Change layouts
+
+* kbd:[MOD+CTRL+TAB] : toggle between layouts
+
+### Move windows
+
+* kbd:[MOD+SHIFT+H] : move focused window to the left
+* kbd:[MOD+SHIFT+L] : move focused window to the right
+* kbd:[MOD+SHIFT+J] : move focused window  down
+* kbd:[MOD+SHIFT+K] : move focused window up
+
+### Resize windows
+
+* kbd:[MOD+CTRL+H] : grow window to the left
+* kbd:[MOD+CTRL+L] : grow window to the right
+* kbd:[MOD+CTRL+J] : grow window down
+* kbd:[MOD+CTRL+K] : grow window up
+
+* kbd:[MOD+N] : reset all windows sizes
+
+### Launch and close Apps
+
+* kbd:[MOD+W] : closes the focused window
+* kbd:[MOD+R] : opens the prompt widget to launch a command
+* kbd:[MOD+SHIFT+RETURN] : launches Rofi in combined mode
+* kbd:[MOD+RETURN] : launches the terminal (Kitty)
+* kbd:[MOD+B] : launches the browser (Chrome)
+* kbd:[MOD+V] : launches VSCode
