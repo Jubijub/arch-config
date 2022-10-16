@@ -82,7 +82,11 @@ keys = [
     ),
     Key([mod, "control"], "j", lazy.layout.grow_down(), desc="Grow window down"),
     Key([mod, "control"], "k", lazy.layout.grow_up(), desc="Grow window up"),
+    Key([mod], "i", lazy.layout.grow(), desc="grow focused window at the expense of other columns"),
+    Key([mod], "m", lazy.layout.shrink(), desc="shrink focused window while growing other columns"),
     Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
+    Key([mod], "o", lazy.layout.maximize(), desc="Makes focused window take maximum size"),
+    Key([mod, "shift"], "space", lazy.layout.flip(), desc="Move window focus to other window"),
     # Launch and close apps
     Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
     Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a prompt widget"),
@@ -95,7 +99,7 @@ keys = [
     Key([mod], "Return", lazy.spawn("kitty"), desc="Launch terminal"),
     Key([mod], "b", lazy.spawn("google-chrome-beta"), desc="Chrome browser"),
     Key([mod], "v", lazy.spawn("code"), desc="VSCode"),
-    Key([mod], "n", lazy.spawn("nautilus"), desc="Nautilus"),
+    Key([mod], "f", lazy.spawn("nautilus"), desc="Nautilus"),
 ]
 
 icons_path = os.path.expanduser("~") + "/.config/qtile/qtile_icons"
@@ -132,22 +136,25 @@ colors = {
     "crust": ["#181926"],
 }
 
-layout_theme = {
+base_layout_theme = {
     "border_width": 2,
-    "margin": 8,
     "border_focus": colors["blue"],
     "border_normal": colors["overlay0"],
+}
+non_floating_layout_theme = {
+    **base_layout_theme,
+    "margin": 8,
 }
 
 # Layout configuration
 layouts = [
     # layout.Bsp(),
     # layout.Columns(),
-    layout.Floating(**layout_theme),
+    layout.Floating(**non_floating_layout_theme),
     # layout.Matrix(),
     # layout.Max(),
-    layout.MonadTall(**layout_theme),
-    layout.MonadWide(**layout_theme),
+    layout.MonadTall(**non_floating_layout_theme),
+    layout.MonadWide(**non_floating_layout_theme),
     # layout.RatioTile(),
     # layout.Stack(num_stacks=2),
     # layout.Tile(),
@@ -306,6 +313,7 @@ follow_mouse_focus = True
 bring_front_click = False
 cursor_warp = False
 floating_layout = layout.Floating(
+    **base_layout_theme,
     float_rules=[
         # Run the utility of `xprop` to see the wm class and name of an X client.
         *layout.Floating.default_float_rules,
