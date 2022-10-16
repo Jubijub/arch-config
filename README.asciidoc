@@ -130,8 +130,11 @@ The file hierarchy mimic the target structure on the disk, so if you find a file
 * kbd:[MOD+CTRL+L] : grow window to the right
 * kbd:[MOD+CTRL+J] : grow window down
 * kbd:[MOD+CTRL+K] : grow window up
-
-* kbd:[MOD+N] : reset all windows sizes
+* kbd:[MOD+I] : For MonadTall, grows one column at the expense of the other
+* kbd:[MOD+M] : For MonadTall, shrinks one column at the benefit of the other
+* kbd:[MOD+O] : Maximizes a window size to the maximum size the layout will allow
+* kbd:[MOD+SHIFT+SPACE] : Flips the main / secondary areas (for Monadtall, flips columns)  
+* kbd:[MOD+N] : reset all windows sizes (for MonadTall, resets window only in the secondary column)
 
 ### Launch and close Apps
 
