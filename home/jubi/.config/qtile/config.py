@@ -86,7 +86,7 @@ keys = [
     Key([mod], "m", lazy.layout.shrink(), desc="shrink focused window while growing other columns"),
     Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
     Key([mod], "o", lazy.layout.maximize(), desc="Makes focused window take maximum size"),
-    Key([mod, "shift"], "space", lazy.layout.flip(), desc="Move window focus to other window"),
+    Key([mod, "shift"], "space", lazy.layout.flip(), desc="Flips the main and secondary areas"),
     # Launch and close apps
     Key([mod], "w", lazy.window.kill(), desc="Kill focused window"),
     Key([mod], "r", lazy.spawncmd(), desc="Spawn a command using a prompt widget"),
