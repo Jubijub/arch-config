@@ -19,7 +19,7 @@ if status is-interactive
     set -gx LD_LIBRARY_PATH $LD_LIBRARY_PATH:/opt/cuda/lib64
 
     # exa
-        alias exa"exa --color --time-style=long-iso"
+    alias exa="exa --color --time-style=long-iso"
     alias ls="exa"
     alias la="ls --long --all --header --icons"
     alias lg="ls --long --all --header --icons --git"
