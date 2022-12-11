@@ -1,13 +1,13 @@
 # Path
 typeset -U path
 path=( 
-    /bin
-    /usr/bin
-    /usr/local/bin
-    /usr/lib/ccache/bin
-    /opt/cuda/bin
+    $HOME/.pyenv
     $HOME/.local/bin
     $HOME/.npm-packages/bin
+    /opt/cuda/bin
+    /usr/local/bin
+    /usr/bin
+    /bin
     $path[@])
 # XDG Base directories
 export XDG_CONFIG_HOME=$HOME/.config
