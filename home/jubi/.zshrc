@@ -11,7 +11,7 @@ fi
 # ZSH basic configuration
 ###################################################################################################
 #Poetry completion
-fpath+=~/.zfunc # contains a completion file generated from Poetry
+fpath+=~/.zfunc # contains a completion files
 
 #Autocompletion
 zstyle ':completion:*' menu yes select
@@ -48,6 +48,7 @@ alias fd="fd -HI"
 ### Plugins installed via pacman / paru ###
 
 #Enable syntax highlighting
+source ~/.zsh/catppuccin_macchiato-zsh-syntax-highlighting.zsh
 source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 
 #Enable Fish-like auto-suggestions
@@ -79,3 +80,5 @@ gpgconf --launch gpg-agent
 # Refresh gpg-agent tty in case user switches into an X session
 gpg-connect-agent updatestartuptty /bye >/dev/null
 
+#Pyenv
+eval "$(pyenv init -)"
