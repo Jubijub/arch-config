@@ -15,12 +15,14 @@ export XDG_DATA_HOME=$HOME/.local/share
 export XDG_DATA_DIRS=/usr/local/share:/usr/share:$XDG_DATA_DIRS
 
 # Environment variables
-export LANG=en_US.UTF-8
 export EDITOR=vim
-export MAKEFLAGS="-j8 -l8"
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/cuda/lib64
-export JDK_HOME=/usr/lib/jvm/default/
+export GTK_THEME="Catppuccin-Macchiato"
 export JAVA_HOME=/usr/lib/jvm/default/
+export JDK_HOME=/usr/lib/jvm/default/
+export LANG=en_US.UTF-8
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/opt/cuda/lib64
+export MAKEFLAGS="-j8 -l8"
+export PYENV_ROOT="$HOME/.pyenv"
 
 # Set SSH to use gpg-agent
 unset SSH_AGENT_PID
