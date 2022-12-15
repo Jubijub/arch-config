@@ -34,7 +34,7 @@ setopt appendhistory
 setopt share_history        #share history between multiple instances of zsh
 
 #aliases
-alias exa="exa --color --time-style=long-iso"
+alias exa="exa --time-style=long-iso"
 alias ls="exa"
 alias la="ls --long --all --header --icons"
 alias lg="ls --long --all --header --icons --git"
