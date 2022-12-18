@@ -27,7 +27,7 @@ if status is-interactive
 
     #fd
     alias fd="fd -HI"
-    
+
     # fzf
     set -Ux FZF_DEFAULT_OPTS "\
     --height 20% --border \
