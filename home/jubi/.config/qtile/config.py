@@ -317,6 +317,8 @@ floating_layout = layout.Floating(
     float_rules=[
         # Run the utility of `xprop` to see the wm class and name of an X client.
         *layout.Floating.default_float_rules,
+        Match(wm_class="jetbrains-toolbox"), # Jetbrains-Toolbox
+        Match(wm_class="JetBrains Toolbox"), 
         Match(wm_class="flameshot"),  # Flameshot
         Match(wm_class="pavucontrol"),  # PulseAudio volume control applet
         Match(wm_class="blueman-manager"),  # Blueman applet
