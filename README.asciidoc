@@ -141,7 +141,8 @@ The file hierarchy mimic the target structure on the disk, so if you find a file
 * kbd:[MOD+W] : closes the focused window
 * kbd:[MOD+R] : opens the prompt widget to launch a command
 * kbd:[MOD+SHIFT+RETURN] : launches Rofi in combined mode
+* kbd:[MOD+CTRL+A] : launches a Rofi menu to change the active output (sink)
 * kbd:[MOD+RETURN] : launches the terminal (Kitty)
 * kbd:[MOD+B] : launches the browser (Chrome)
 * kbd:[MOD+V] : launches VSCode
-* kbd:[MOD+N] : launches file browser (nautilus)
+* kbd:[MOD+F] : launches file browser (Thunar)
