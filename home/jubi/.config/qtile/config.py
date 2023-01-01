@@ -26,6 +26,7 @@
 
 import os
 import subprocess
+from audio import change_audio_sink
 from libqtile import bar, layout, widget
 from libqtile import hook, qtile
 from libqtile.config import Click, Drag, Group, Key, Match, Screen
@@ -33,7 +34,6 @@ from libqtile.dgroups import simple_key_binder
 from libqtile.lazy import lazy
 from qtile_extras import widget
 from qtile_extras.widget.decorations import PowerLineDecoration
-
 
 # Key bindings configuration
 mod = "mod4"
@@ -54,6 +54,7 @@ keys = [
         desc="Restart the computer",
     ),
     # Change focus
+    Key([mod], "a", lazy.function(change_audio_sink), desc="Change audio output"),
     Key([mod], "h", lazy.layout.left(), desc="Move focus to left"),
     Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
     Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
