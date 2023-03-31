@@ -11,8 +11,8 @@ if status is-interactive
     set -gx XDG_DATA_DIRS /usr/local/share:/usr/share:$XDG_DATA_DIRS    
 
     ## Core env variables
-    set -gx EDITOR vim
-    set -Ux GTK_THEME "Catppuccin-Macchiato"
+    set -gx EDITOR nvim
+    set -Ux GTK_THEME "Catppuccin-Dark"
     set -gx LANG en_US.UTF-8
     
     # CUDA
