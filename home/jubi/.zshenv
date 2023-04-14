@@ -15,7 +15,7 @@ export XDG_DATA_HOME=$HOME/.local/share
 export XDG_DATA_DIRS=/usr/local/share:/usr/share:$XDG_DATA_DIRS
 
 # Environment variables
-export EDITOR=vim
+export EDITOR=nvim
 export GTK_THEME="Catppuccin-Dark"
 export JAVA_HOME=/usr/lib/jvm/default/
 export JDK_HOME=/usr/lib/jvm/default/
