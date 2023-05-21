@@ -6,7 +6,7 @@ from rofi import Rofi
 rofi_default_args = ["-i"]
 
 def change_audio_sink(qtile, *, rofi = None):
-    r = rofi or Rofi(rofi_args = rofi_default_args)
+    r = rofi or Rofi()
     proc = subprocess.Popen("pactl -f json list sinks".split(" "), stdout=subprocess.PIPE)
     try:
         out, err = proc.communicate(timeout=1)
