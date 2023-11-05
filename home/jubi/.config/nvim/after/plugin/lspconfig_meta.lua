@@ -2,9 +2,11 @@
 
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
 
+-- Keybindings
 vim.api.nvim_create_autocmd('LspAttach', {
     desc = 'LSP actions',
     callback = function(event)
+        local opts = { buffer = event.buf }
         vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
         vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
         vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
@@ -19,6 +21,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
         vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, opts)
         vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+        vim.keymap.set('n', '<leader>ds', vim.lsp.buf.document_symbol, opts)
         vim.keymap.set('n', '<leader>f', function()
             vim.lsp.buf.format { async = true }
         end, opts)
@@ -28,8 +31,18 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
 })
 
+-- Mason configuration
+require("mason").setup()
+require("mason-lspconfig").setup {}
+
+-- vim lua api - must be enabled before lspconfig
+require("neodev").setup({
+    -- add any options here, or leave empty to use the default settings
+})
+
 local lspconfig = require('lspconfig')
 
+-- autocomplete configuration
 local cmp = require('cmp')
 cmp.setup {
     mapping = {
@@ -71,6 +84,7 @@ cmp.setup {
     },
 }
 
+-- defines autocomplete categories colors using Catppuccin theme
 vim.api.nvim_set_hl(0, "PmenuSel", { bg = "#6e738d", fg = "NONE" })
 vim.api.nvim_set_hl(0, "Pmenu", { fg = "#CAD3F5", bg = "#181926" })
 
@@ -113,6 +127,10 @@ vim.api.nvim_set_hl(0, "CmpItemKindColor", { fg = "#24273A", bg = "#8BD5CA" })
 vim.api.nvim_set_hl(0, "CmpItemKindTypeParameter", { fg = "#24273A", bg = "#8BD5CA" })
 
 
+------------------------------------------------------------------------------
+-- LSP servers configuration
+------------------------------------------------------------------------------
+
 local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 local get_servers = require('mason-lspconfig').get_installed_servers
 
@@ -121,10 +139,6 @@ for _, server_name in ipairs(get_servers()) do
         capabilities = lsp_capabilities,
     })
 end
-
-------------------------------------------------------------------------------
--- LSP servers configuration
-------------------------------------------------------------------------------
 
 require('lspconfig').pylsp.setup {
     settings = {
@@ -158,6 +172,36 @@ require('lspconfig').pylsp.setup {
                     extendSelect = { "I" },
                 },
                 black = { enabled = true }
+            }
+        }
+    }
+}
+
+require('lspconfig').lua_ls.setup {
+    on_init = function(client)
+        local path = client.workspace_folders[1].name
+        if not vim.loop.fs_stat(path .. '/.luarc.json') and not vim.loop.fs_stat(path .. '/.luarc.jsonc') then
+            client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+                runtime = {
+                    -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+                    version = 'LuaJIT'
+                },
+                -- Make the server aware of Neovim runtime files
+                workspace = {
+                    library = { vim.env.VIMRUNTIME }
+                    -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
+                    -- library = vim.api.nvim_get_runtime_file("", true)
+                }
+            })
+
+            client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
+        end
+        return true
+    end,
+    settings = {
+        Lua = {
+            completion = {
+                callSnippet = "Replace"
             }
         }
     }

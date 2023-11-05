@@ -58,5 +58,3 @@ vim.keymap.set("n", "<F5>", ':DapContinue<CR>')
 vim.keymap.set("n", "<F10>", ':DapStepOver<CR>')
 vim.keymap.set("n", "<F11>", ':DapStepInto<CR>')
 vim.keymap.set("n", "<s-F11>", ':DapStepOut<CR>')
-
-vim.keymap.set("n", "<F6>", dap.step_over)
