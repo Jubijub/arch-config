@@ -1,0 +1,281 @@
+:experimental:
+
+# Neovim shortcuts overview
+
+## Modes
+
+### Visual
+
+* kbd:[v] : visual mode (character by character)
+* kbd:[V] : visual line mode (entire lines)
+* kbd:[CTRL + V] : visual block (rectangular selection)
+* kbd:[o] : edit the other end of the selection
+* kbd:[O] : edit the other set of corners in visual block mode
+
+### Normal - in RTW mode
+
+* kbd:[:Ex] / `<leader>pv`: switches to netrw mode
+* kbd:[%] : create a file
+* kbd:[d] : create a directory
+* `:![shell command\]` : executes a shell command
+* `:w` [name]` : write the file/selection as a new file
+* Save selection as a new file name
+    ** kbd:[v] for visual mode
+    ** motions to select text
+    ** kbd:[<ESC>]
+    ** `:w FILE` : saves the selection as new FILE
+* `r FILENAME` : retrieves the content of a file and inserts it after the cursor
+* `:r :![shell commands]` : inserts the output of a shell command
+* kbd:[CTRL + D] : code completion for the command
+
+## Windows
+* kbd:[CTRL + W then q]: closes the current window
+* kbd:[CTRL + W then c]: closes the current window, with a warning if it's the last window
+* kbd:[CTRL + W then o]: closes all the [o]ther windows
+
+### Splits
+* `:sp`: horizontal split opening a blank new window
+* `:sp + optionnal file path`: horizontal split loading the new file in the new window
+* `:vsp`: horizontal split opening a blank new window
+* `:vsp + optionnal file path`: horizontal split loading the new file in the new window
+* kbd:[CTRL + W then s] : split the current window horizontally, opens the same buffer
+* kbd:[CTRL + W then v] : split the current window vertically, opens the same buffer
+* kbd:[CTRL + W then v] : split the current window horizontally, opens a blank buffer
+
+### Resize windows
+* kbd:[CTRL + W then =]: distributes the avaiable space within a nesting level
+* kbd:[CTRL + W then _]: gives the maximum vertical space
+* kbd:[CTRL + W then |]: gives the maximum horizontal space
+
+### Navigation between windows
+* kbd:[CTRL + W then w]: goes to the next window
+* kbd:[CTRL + W then @]: goes to the previous window
+* kbd:[CTRL + W then l]: goes towards top left
+* kbd:[CTRL + W then b]: goes towards bottom right
+* kbd:[CTRL + W] kbd:[CTRL + W] jumps to another window
+* kbd:[CTRL + W then x]: exchanges current window with its neighbour window
+* kbd:[CTRL + W then [number\] then x]: exchanges current window with the n-th window (`:buffers` to have the numbers)
+
+## Motions
+
+**Basic formula : operator [number] motion**
+
+* kbd:[h]: left
+* kbd:[l]: right
+* kbd:[K]: up
+* kbd:[j]: down (mnemonic : J looks like a down arrow)
+
+### Word / WORD jumps
+* kbd:[w]: until the start of the next word, excluding its first character. Puts cursor on the first character of the next word
+* kbd:[b]: moves backwards one word
+* kbd:[W]: moves to the begining of the next group of WORDS (ie any group of character that is not a space, like_this)
+* kbd:[e]: to the end of the current word, including the last character. Puts the cursor on the last character of the word / the space after the deleted word
+* kbd:[ge]: moves to the end of the previous word
+* kbd:[gE]: moves to the end of the previous WORD
+
+### Begining / end of line jumps
+* kbd:[$]: to the end of the line, including its last character
+* kbd:[0]: beginning of the line
+* kbd:[_] or kbd:[^]: goes to the first non blank character
+
+### Character jumps
+* kbd:[f then [character]: jumps forward on the character
+* kbd:[F then [character]: jumps backwards on the character
+* kbd:[t then [character]: jumps forward to the character (ie the character just before)
+* kbd:[t then [character]: jumps backwards to the character (ie the character just before)
+* kbd:[,] / kbd:[;]: jumps to the previous / next character
+* kbd:[%] : moves to the matching `[] () {}`. If not on such caracter, will find the first one, then move to its march.
+
+### Vertical jumps within the buffer
+* kbd:[CTRL + G] : displays a text in the status bar saying how many line the buffer has, and where we are
+
+* kbd:[G]: moves to the bottom of the file
+* `[NUMBER]` kbd:[G]: go to line number x, eg: `12G`
+* kbd:[gg] moves to the top of the file
+* kbd:[H]: moves to the first visible line on the screen
+* kbd:[M]: moves to the middle of the visible lines (ie middle of the screen)
+* kbd:[L]: moves to the last visible line
+* kbd:[CTRL + B]: scrolls up one full screen
+* kbd:[CTRL + u]: scrolls half a screen up
+* kbd:[CTRL + e]: **scrolls up one line (conflicts with Harpoon)**
+* kbd:[CTRL + y]: scrolls down one line
+* kbd:[CTRL + d]: scrolls half a screen down
+* kbd:[CTRL + f]: scrolls down a full screen
+* kbd:[zt]: scrolls to the line with the cursor, placing it at the top
+* kbd:[zz]: scrolls to the line with the cursor, placing it in the middle
+* kbd:[zb]: scrolls to the line with the cursor, placing it at the bottom
+
+### Marks
+* kbd:[``]: go back to previous mark
+* kbd:[CTRL + o]: moves to previous mark
+* kbd:[CTRL + i]: moves to next mark
+* kbd:[m[a-z\]]: sets a named mark
+* kbd:[`[a-z\]]: moves to the named mark
+
+### Search
+* `:set ic` / `:set noic`: sets / removes ignore case mode
+  ** It’s also possible to use `\c` at the end of the command, like `/search\c`
+* `:set hls is` / `:set nohls` : sets / removes highlighting of search results
+* /[Text] + <kbd:[Enter] : searches for [Text] forward and goes to the next occurence
+* ?[Text] + kbd:[Enter] : searches for [Text] backwards and goes to the next occurence
+* n : searches the next occurence (same direction)
+* N : searches the next occurence (reverse direction)
+* % : finds matching ), ] or }
+* kbd:[CRL + o] : moves back to older positions
+* kbd:[CTRL + i] : moves back to newer positions
+
+### Replace (substitution)
+* `:s/[text_to_replace]/[replacement]/` : replaces the next occurrence only
+* `:s/[text_to_replace]/[replacement]/g` : replaces all occurrences in the line
+* `:#,#s/[text_to_replace]/[replacement]/g` : replaces all occurrences between line x and y, inclusive
+- `:%s/[text_to_replace]/[replacement]/g` : replaces all occurrences in the whole file (no prompt)
+- `:%s/[text_to_replace]/[replacement]/gc` : replaces all occurrences in the whole file (with prompt)
+
+*(y/n/a/q/l/\^E/^Y)* : 
+
+* kbd:[y]: confirm the substitution of this match
+* kbd:[n]: skip this match
+* kbd:[a]: substitutes this and all remaining matches
+* kbd:[q]: quits substitution mode
+* kbd:[l]: substitutes this match and quit ("last" match)
+* kbd:[CTRL + E]: scrolls down while staying in substitution mode
+* kbd:[CTRL + Y]: scrolls up while staying in substitution mode
+
+## Text edition operators
+
+* kbd:[.]: repeat the last change
+
+### Delete
+* kbd:[x] : deletes the character under the cursor
+* kbd:[X]: deletes the character left of the cursor
+* kbd:[BACKSPACE] : deletes the character before the cursor
+* kbd:[dw]: deletes the word under the cursor
+* kbd:[D] or kbd:[d$] : deletes from cursor until end of line
+* kbd:[dd] : deletes the entire line
+* kbd:[J]: deletes line break join the line with the line below
+
+### Insert / Append
+* kbd:[i] : switches to insert mode, inserts before the cursor
+* kbd:[I] : switches to insert mode, inserts at the beginning of the line
+* kbd:[a]: switches to insert mode, inserts after the cursor
+* kbd:[A]: switches to insert mode, inserts at the end of the line
+* kbd:[o]: opens (adds) a line below the current line and switches to insert mode
+* kbd:[O]: opens (adds) a line above the current line and switches to insert mode
+
+### Replace
+* kbd:[r then [character]] : replaces one character (stays in normal mode)
+* kbd:[R then [characters]] : switches to replace Mode, typing text overwrites existing text
+* kbd:[c then [motion\]] :  changes (delete + insert mode) text until the end of the word/line, and switches to insert mode
+* kbd:[C]: changes (delete + insert mode) until the end of the line
+* kbd:[cc] / kbd:[S]: changes a whole line
+* kbd:[s]: changes the character under the cursor
+
+### Yank (copy)
+* kbd:[y]: copy test
+* kbd:[Y]: copy until the end of the line
+* kbd:[yy]: copy the entire line
+* kbd:[LEADER y]: copy to OS clipboard (+)
+
+### Put (paste)
+* kbd:[p]: puts text after the cursor
+* kbd:[P]: puts text before the cursor
+
+### Undo
+* kbd:[u]: undo last character action
+* kbd:[U]: undo all edits on a whole line
+* kbd:[LEADER u]: Undotree toggle UI
+* kbd:[CONTROL + r]: redo
+
+### Indent
+* kbd:[==]: auto-indents the current line
+* kbd:[>]: shift right by one shift width
+* kbd:[<]: shift left by one shift width
+
+## Text objects
+### Scope
+
+* kbd:[a] : (”a” text object) text object + following white space or character (), []
+* kbd:[i] : (inner) text object without white space
+
+### Text objects
+
+* kbd:[w]: a word
+* kbd:[W]: a WORD
+* kbd:[s]: a sentence
+* kbd:[p]: paragraph
+* kbd:[[], kbd:[[] : a `[]` block
+* kbd:[b] or kbd:[(], kbd:[)]: a `()` block
+* kbd:[<] or kbd:[>] : a `<>` block
+* kbd:[t] : a tag block (between `<tag>` and the matching `</tag>`)
+* kbd:[B],kbd:[{], kbd:[}] a `{}` block
+
+## Plugins
+### Telescope
+
+* kbd:[LEADER p f] : find files
+* kbd:[CONROL + p] : git files
+* kbd:[LEADER p s] : grep search
+
+### Harpoon
+
+* kbd:[LEADER a] : mark file
+* kbd:[<C-t>] : shows Harpoon quick menu
+* kbd:[LEADER j a] : jumo to file 1
+* kbd:[LEADER j s] : jumo to file 1
+* kbd:[LEADER j d] : jumo to file 1
+* kbd:[LEADER j f] : jumo to file 1
+
+### LSP
+
+#### Autocomplete 
+
+* kbd:[CONTROL + SPACE]: trigger auto-complete
+* kbd:[CONTROL + p]: previous autocompletion
+* kbd:[CONTROL + n]: next autocompletion
+* kbd:[CONTROL + y]: confirm auto-complete
+* kbd:[CONTROL + e]: abort auto-complete
+
+#### Actions
+
+* kbd:[LEADER f]: formats buffer
+* kbd:[LEADER c a]: view code actions
+* kbd:[K]: hover menu (call twice to jump into the hover window)
+* kbd:[LEADER r n]: rename
+
+#### Diagnostics
+
+* kbd:[LEADER d l]: view diagnostic floating window (when over a diagnostic)
+* kbd:[[d]: next diagnostic
+* kbd:[\] d]: previous diagnostic
+
+#### References
+
+* kbd:[LEADER D]: view type definition
+* kbd:[g D]: go to declaration
+* kbd:[g d]: go to definition
+* kbd:[g i]: go to implementation
+  ** kbd:[CRL + o] : moves back to calling point
+  ** kbd:[CTRL + i] : moves back to the definition
+* kbd:[g r] : list references in a new buffer
+* kbd:[LEADER d s] : list document symbols in a new buffer
+* kbd:[<C-h>] : view signature help
+
+#### Workspace management
+* kbd:[LEADER w a>] : add workspace folder
+* kbd:[LEADER w r>] : remove workspace folder
+* kbd:[LEADER w l>] : list workspace folders
+
+### DAP
+
+Shortcuts match Visual Source Code.
+
+* kbd:[F9] : toggle breakpoint
+* kbd:[SHIFT + F5] : terminate debug
+* kbd:[F5] : continue
+* kbd:[F10] : step over
+* kbd:[F11]: step into
+* kbd:[SHIFT + F11]: step out
+
+### Fugitive
+
+* kbd:[Leader g s] : shows Fugitive UI (equivalent to git status)

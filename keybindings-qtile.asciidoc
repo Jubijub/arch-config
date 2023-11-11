@@ -1,0 +1,59 @@
+:experimental:
+
+# Qtile shortcuts overview
+
+## General
+
+* kbd:[MOD+CTRL+R] : Reloads QTile configuration
+* kbd:[MOD+CTRL+Q] : Quits QTile and returns to Display manager
+* kbd:[MOD+CTRL+SHIFT+Q] : power-off the computer
+* kbd:[MOD+CTRL+SHIFT+R] : restart the computer
+
+## Groups
+
+* kbd:[MOD+1] to kbd:[MOD+4] : displays the group x on the active screen
+* kbd:[MOD+SHIFT+1] to kbd:[MOD+SHIFT+4] : moves the active window to group x
+
+## Change focus
+
+* kbd:[MOD+H] : move focus to the left
+* kbd:[MOD+L] : move focus to the right
+* kbd:[MOD+J] : move focus down
+* kbd:[MOD+K] : move focus up
+* kbd:[MOD+SPACE] : move focus to the next window in the focus ring
+* kbd:[MOD+TAB] : Rofi window switcher
+* kbd:[MOD+SHIFT+.] : move focus to next screen (clicking on the background of the other screen does the same)
+
+## Change layouts
+
+* kbd:[MOD+CTRL+TAB] : toggle between layouts
+
+## Move windows
+
+* kbd:[MOD+SHIFT+H] : move focused window to the left
+* kbd:[MOD+SHIFT+L] : move focused window to the right
+* kbd:[MOD+SHIFT+J] : move focused window  down
+* kbd:[MOD+SHIFT+K] : move focused window up
+
+## Resize windows
+
+* kbd:[MOD+CTRL+H] : grow window to the left
+* kbd:[MOD+CTRL+L] : grow window to the right
+* kbd:[MOD+CTRL+J] : grow window down
+* kbd:[MOD+CTRL+K] : grow window up
+* kbd:[MOD+I] : For MonadTall, grows one column at the expense of the other
+* kbd:[MOD+M] : For MonadTall, shrinks one column at the benefit of the other
+* kbd:[MOD+O] : Maximizes a window size to the maximum size the layout will allow
+* kbd:[MOD+SHIFT+SPACE] : Flips the main / secondary areas (for Monadtall, flips columns)  
+* kbd:[MOD+N] : reset all windows sizes (for MonadTall, resets window only in the secondary column)
+
+## Launch and close Apps
+
+* kbd:[MOD+W] : closes the focused window
+* kbd:[MOD+R] : opens the prompt widget to launch a command
+* kbd:[MOD+SHIFT+RETURN] : launches Rofi in combined mode
+* kbd:[MOD+CTRL+A] : launches a Rofi menu to change the active output (sink)
+* kbd:[MOD+RETURN] : launches the terminal (Kitty)
+* kbd:[MOD+B] : launches the browser (Chrome)
+* kbd:[MOD+V] : launches VSCode
+* kbd:[MOD+F] : launches file browser (Thunar)

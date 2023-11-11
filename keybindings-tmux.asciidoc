@@ -1,0 +1,66 @@
+:experimental:
+
+# Qtile shortcuts overview
+
+*Reference* : https://tmuxcheatsheet.com/
+
+Prefix key: kbd:[CTRL + SPACE]
+
+## Sessions
+
+### Create new sessions
+* `tmux`: Creates a new session and attaches to it
+* `tmux new -s my-session`: Creates the session `my-session` and attaches to it
+* In `tmux`, use kbd:[PREFIX] `:new` to create a new session
+* In `tmux`, use kbd:[PREFIX] `:new -s my-session` to create the session `my-session`
+
+### Attach / detach to an existing session
+
+* `tmux attach` : will reattach to the most recent session
+* `tmux attach -t my-session` : attaches to `my-session`
+* kbd:[PREFIX + d] : detaches from current session
+
+### List sessions
+
+* `tmux ls` : lists all sessions (from the shell)
+* kbd:[PREFIX + s] : lists all sessions (from tmux)
+* kbd:[PREFIX + w] : lists all sessions and allows to preview windows
+
+### Kill/Delete sessions
+
+* `tmux kill-session -t my-session` : kills/deletes `my-session`
+* `tmux kill-session -a` : kills/deletes all session except the current
+* `tmux kill-ses -a -t my-session` : kills/deletes all session except `my-session`
+
+### Rename sessions
+* kbd:[PREFIX + $] : rename the session
+
+## Windows
+
+* kbd:[PREFIX + C] : New window
+* kbd:[SHIFT + ALT + H] : Cycles to the next window
+* kbd:[SHIFT + ALT + L] : Cycles to the previous window
+* kbd:[PREFIX + &] : Closes a window
+
+## Panes
+
+* kbd:[PREFIX + %] : Splits a window horizontally
+* kbd:[PREFIX + "] : Splits a window vertically
+* kbd:[PREFIX + x] : Closes the pane
+
+* kbd:[PREFIX + h j k l] : Navigates between the panes
+* kbd:[PREFIX + {] : Moves the pane left within the window
+* kbd:[PREFIX + }] : Moves the pane right within the window
+
+* kbd:[PREFIX + q] : Displays pane numbers
+* kbd:[PREFIX + q] then `pane number` : makes the pane active
+
+* kbd:[PREFIX + z] : Makes the active pane take the full window
+* kbd:[PREFIX + !] : Turns the active pane into a new window
+
+## Copy mode
+
+* kbd:[CTRL + [] : enters copy mode, use vim keys to move the cursor
+* kbd:[v] : enters vim-like selection mode
+* kbd:[CTRL + v] : toggles between line mode and rectangleW select mode
+* kbd:[y] : yanks the selection
