@@ -1,6 +1,6 @@
 :experimental:
 
-# Qtile shortcuts overview
+# tmux shortcuts overview
 
 *Reference* : https://tmuxcheatsheet.com/
 
@@ -44,11 +44,14 @@ Prefix key: kbd:[CTRL + SPACE]
 
 ## Panes
 
+### Create / remove panes
 * kbd:[PREFIX + %] : Splits a window horizontally
 * kbd:[PREFIX + "] : Splits a window vertically
 * kbd:[PREFIX + x] : Closes the pane
 
-* kbd:[PREFIX + h j k l] : Navigates between the panes
+### Move between panes
+* kbd:[ALT + arrows] : Navigates between the panes
+* kbd:[CTRL + h j k l] : Navigates between the panes
 * kbd:[PREFIX + {] : Moves the pane left within the window
 * kbd:[PREFIX + }] : Moves the pane right within the window
 
