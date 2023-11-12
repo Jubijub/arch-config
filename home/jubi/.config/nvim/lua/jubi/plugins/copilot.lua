@@ -1,0 +1,3 @@
+return {
+    "zbirenbaum/copilot.lua",
+}
