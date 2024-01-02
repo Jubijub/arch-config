@@ -6,8 +6,6 @@
 
 This project contains various files I use to configure my Linux OS (https://www.archlinux.org/[Arch Linux]), my shell (https://www.zsh.org/[ZSH]) my terminal client (https://sw.kovidgoyal.net/kitty/[kitty]), and my Window manager (https://hyprland.org[Hyperland]).
 
-I nicknamed my workstation *UglyButCool* which reflects my philosophy : I prefer performance over style. My Qtile configuration reflects this : I made it as nice as I could, but I favoured ease of use over style.
-
 Feel free to copy those scripts, but use at your own risks.
 
 ## Screenshots
