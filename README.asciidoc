@@ -54,7 +54,7 @@ My ZSH installation procedure is described https://github.com/Jubijub/arch-confi
 * https://github.com/davatorium/rofi[rofi] : an app launcher and a window switcher.
 
 ## Config files
-The file hierarchy mimic the target structure on the disk, so if you find a file in `a/b/c/file.ext`, it should be copied in `/a/b/c/file.ext`.
+The file hierarchy mimics the target structure on the disk, so if you find a file in `a/b/c/file.ext`, it should be copied in `/a/b/c/file.ext`.
 
 ### etc
 
