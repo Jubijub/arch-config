@@ -4,19 +4,19 @@ if status is-interactive
     fish_add_path -p /opt/cuda/bin
     fish_add_path -p /usr/local/sbin /usr/local/bin /usr/bin /bin
 
-    
     # XDG Base directories
     set -gx XDG_CONFIG_HOME $HOME/.config
     set -gx XDG_DATA_HOME $HOME/.local/share
-    set -gx XDG_DATA_DIRS /usr/local/share:/usr/share:$XDG_DATA_DIRS    
-
+    if not set -q $XDG_DATA_DIRS
+    	set -gx --path XDG_DATA_DIRS /usr/local/share /usr/share    
+    end
     ## Core env variables
     set -gx EDITOR nvim
     set -Ux GTK_THEME "Catppuccin-Dark"
     set -gx LANG en_US.UTF-8
     
     # CUDA
-    set -gx LD_LIBRARY_PATH $LD_LIBRARY_PATH:/opt/cuda/lib64
+    set -gx --path LD_LIBRARY_PATH $LD_LIBRARY_PATH /opt/cuda/lib64
 
     # exa
     alias exa="exa --time-style=long-iso"

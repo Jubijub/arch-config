@@ -1,0 +1,91 @@
+@import url("./colors.css");
+
+* {
+    background: transparent;
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 18px;
+}
+
+#waybar {
+    min-height: 10px;
+}
+
+.modules-left {
+    border-radius: 8px;
+    padding: 2px;
+    color: @foreground;
+    margin-left: 4px;
+    margin-top: 4px;
+}
+
+.modules-right {
+    margin-top: 8px;
+    margin-right: 8px;
+}
+
+#custom-launcher {
+    margin-right: 8px;
+    padding-right: 5px;
+    padding-left: 10px;
+    color: #89b4fa;
+    ;
+    background: #1E1E2E;
+    border-radius: 8px;
+}
+
+#workspaces {
+    background: alpha(@background, 0.8);
+    border-radius: 8px;
+}
+
+#workspaces button {
+    margin: 0.1em 0.25em;
+    border-radius: 0;
+    color: shade(@foreground, 0.8);
+}
+
+#workspaces button.empty {
+    color: #3c485d;
+}
+
+#workspaces button.active {
+    /*background: shade(alpha(@foreground, 0.2), 0.8);*/
+    color: #f38ba8;
+    font-weight: bold;
+    border-bottom: 2px solid #f38ba8;
+}
+
+#workspaces button.urgent {
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+#custom-power {
+    margin-left: 8px;
+    padding-left: 10px;
+    padding-right: 5px;
+    margin-bottom: 0px;
+    color: @background;
+    background: #F28FAD;
+    border-radius: 8px;
+}
+
+#clock {
+    padding: 0px 8px 0px 8px;
+    background: @color2;
+    border-radius: 8px;
+    color: @background;
+}
+
+#tray {
+    padding: 0px 8px 0px 8px;
+    background: alpha(@background, 0.8);
+    border-radius: 8px;
+}
+
+#tray menu,
+tooltip {
+    background: @background;
+    color: @active;
+    border: 1px solid shade(@active, 0.6);
+}

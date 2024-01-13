@@ -48,7 +48,7 @@ alias fd="fd -HI"
 ### Plugins installed via pacman / paru ###
 
 #Enable syntax highlighting
-source ~/.zsh/catppuccin_macchiato-zsh-syntax-highlighting.zsh
+source ~/.zsh/catppuccin_mocha-zsh-syntax-highlighting.zsh
 source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
 
 #Enable Fish-like auto-suggestions

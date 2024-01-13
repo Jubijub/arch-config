@@ -1,0 +1,82 @@
+{
+    "layer": "top",
+    "height": 40,
+    "spacing": 4,
+    "modules-left": ["custom/launcher", "hyprland/workspaces"],
+    "modules-right": ["idle_inhibitor", "pulseaudio", "cpu", "memory", "keyboard-state", "clock", "tray", "custom/power"],
+    "hyprland/workspaces": {
+        "active-only": false,
+        "format": "{icon}",
+        "format-icons": {
+            "1": "",
+            "2": "",
+            "3": "",
+            "4": "",
+            "5": ""
+        },
+        "persistent-workspaces": {
+            "1": [ ],
+            "2": [ ],
+            "3": [ ],
+            "4": [ ]
+        },
+    },
+     "custom/launcher":{
+        "format": " ",
+        "on-click": "rofi -show drun",
+        "on-click-right": "killall rofi"
+    },
+    "keyboard-state": {
+        "numlock": false,
+        "capslock": true,
+        "format": "{name} {icon}",
+        "format-icons": {
+            "locked": "",
+            "unlocked": ""
+        }
+    },
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        }
+    },
+    "pulseaudio": {
+        "scroll-step": 2, // %, can be a float
+        "format": "{volume}% {icon} {format_source}",
+        "format-bluetooth": "{volume}% {icon} {format_source}",
+        "format-bluetooth-muted": " {icon} {format_source}",
+        "format-muted": " {format_source}",
+        "format-source": "{volume}% ",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "hands-free": "",
+            "headset": "",
+            "phone": "",
+            "portable": "",
+            "car": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol"
+    },
+    "cpu": {
+        "format": "{usage}% ",
+        "interval": 1,
+        "tooltip": true
+    },
+    "memory": {
+        "format": "{}% ",
+        "interval": 1,
+    },
+    "clock": {
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format-alt": "{:%Y-%m-%d}"
+    },
+    "tray": { "spacing": 10 },
+    "custom/power":{
+        "format": " ",
+        "on-click": "zsh ~/.config/rofi/scripts/power.sh",
+    },
+}
