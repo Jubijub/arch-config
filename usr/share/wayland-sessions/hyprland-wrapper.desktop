@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=Hyprland-wrapper
+Comment=An intelligent dynamic tiling Wayland compositor
+Exec=/home/jubi/.local/bin/hyprland-wrapper.sh
+Type=Application
