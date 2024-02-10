@@ -145,6 +145,11 @@
 
 * kbd:[.]: repeat the last change
 
+### Move
+_In visual mode_
+* kbd:[J]: moves the selected line down
+* kbd:[K]: moves the selected line up
+
 ### Delete
 * kbd:[x] : deletes the character under the cursor
 * kbd:[X]: deletes the character left of the cursor
@@ -163,8 +168,8 @@
 * kbd:[O]: opens (adds) a line above the current line and switches to insert mode
 
 ### Replace
-* kbd:[r then [character]] : replaces one character (stays in normal mode)
-* kbd:[R then [characters]] : switches to replace Mode, typing text overwrites existing text
+* kbd:[r then [character\]] : replaces one character (stays in normal mode)
+* kbd:[R then [characters\]] : switches to replace Mode, typing text overwrites existing text
 * kbd:[c then [motion\]] :  changes (delete + insert mode) text until the end of the word/line, and switches to insert mode
 * kbd:[C]: changes (delete + insert mode) until the end of the line
 * kbd:[cc] / kbd:[S]: changes a whole line
@@ -210,13 +215,15 @@
 * kbd:[B],kbd:[{], kbd:[}] a `{}` block
 
 ## Plugins
-### Telescope
+### Navigation
+
+#### Telescope
 
 * kbd:[LEADER p f] : find files
 * kbd:[CONROL + p] : git files
 * kbd:[LEADER p s] : grep search
 
-### Harpoon
+#### Harpoon
 
 * kbd:[LEADER a] : mark file
 * kbd:[<C-t>] : shows Harpoon quick menu
@@ -265,6 +272,14 @@
 * kbd:[LEADER w r>] : remove workspace folder
 * kbd:[LEADER w l>] : list workspace folders
 
+### Copilot
+* kbd:[<M-y>] : accept the whole suggestion
+* kbd:[<M-u>] : accept line
+* kbd:[<M-u>] : accept word
+* kbd:[<M-[>] : previous suggestion
+* kbd:[<M-\]>] : next suggestion
+* kbd:[<C-\]>] : dismiss
+
 ### DAP
 
 Shortcuts match Visual Source Code.
@@ -276,6 +291,13 @@ Shortcuts match Visual Source Code.
 * kbd:[F11]: step into
 * kbd:[SHIFT + F11]: step out
 
-### Fugitive
+### Misc 
+#### Fugitive
 
 * kbd:[Leader g s] : shows Fugitive UI (equivalent to git status)
+
+#### Vim-Commentary
+*kbd:[ g c c]: comment a line out (with a count)
+*kbd:[ g c + motion]: comment the target of a motion (eg: gcap to comment a paragraph)
+_In visual mode_
+*kbd:[ g c]: comment the selection
