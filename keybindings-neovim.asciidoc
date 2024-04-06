@@ -24,7 +24,7 @@
     ** motions to select text
     ** kbd:[<ESC>]
     ** `:w FILE` : saves the selection as new FILE
-* `r FILENAME` : retrieves the content of a file and inserts it after the cursor
+* `:r FILENAME` : retrieves the content of a file and inserts it after the cursor
 * `:r :![shell commands]` : inserts the output of a shell command
 * kbd:[CTRL + D] : code completion for the command
 
@@ -36,14 +36,14 @@
 ### Splits
 * `:sp`: horizontal split opening a blank new window
 * `:sp + optionnal file path`: horizontal split loading the new file in the new window
-* `:vsp`: horizontal split opening a blank new window
-* `:vsp + optionnal file path`: horizontal split loading the new file in the new window
+* `:vsp`: vertical split opening a blank new window
+* `:vsp + optionnal file path`: vertical split loading the new file in the new window
 * kbd:[CTRL + W then s] : split the current window horizontally, opens the same buffer
 * kbd:[CTRL + W then v] : split the current window vertically, opens the same buffer
 * kbd:[CTRL + W then v] : split the current window horizontally, opens a blank buffer
 
 ### Resize windows
-* kbd:[CTRL + W then =]: distributes the avaiable space within a nesting level
+* kbd:[CTRL + W then =]: distributes the available space within a nesting level
 * kbd:[CTRL + W then _]: gives the maximum vertical space
 * kbd:[CTRL + W then |]: gives the maximum horizontal space
 
@@ -82,9 +82,9 @@
 * kbd:[f then [character]: jumps forward on the character
 * kbd:[F then [character]: jumps backwards on the character
 * kbd:[t then [character]: jumps forward to the character (ie the character just before)
-* kbd:[t then [character]: jumps backwards to the character (ie the character just before)
+* kbd:[t then [character]: jumps backwards to the character (ie the character just after)
 * kbd:[,] / kbd:[;]: jumps to the previous / next character
-* kbd:[%] : moves to the matching `[] () {}`. If not on such caracter, will find the first one, then move to its march.
+* kbd:[%] : moves to the matching `[] () {}`. If not on such caracter, will find the first one, then move to its match.
 
 ### Vertical jumps within the buffer
 * kbd:[CTRL + G] : displays a text in the status bar saying how many line the buffer has, and where we are
@@ -97,7 +97,7 @@
 * kbd:[L]: moves to the last visible line
 * kbd:[CTRL + B]: scrolls up one full screen
 * kbd:[CTRL + u]: scrolls half a screen up
-* kbd:[CTRL + e]: **scrolls up one line (conflicts with Harpoon)**
+* kbd:[CTRL + e]: scrolls up one line
 * kbd:[CTRL + y]: scrolls down one line
 * kbd:[CTRL + d]: scrolls half a screen down
 * kbd:[CTRL + f]: scrolls down a full screen
@@ -176,7 +176,7 @@ _In visual mode_
 * kbd:[s]: changes the character under the cursor
 
 ### Yank (copy)
-* kbd:[y]: copy test
+* kbd:[y]: copy text
 * kbd:[Y]: copy until the end of the line
 * kbd:[yy]: copy the entire line
 * kbd:[LEADER y]: copy to OS clipboard (+)
@@ -228,9 +228,9 @@ _In visual mode_
 * kbd:[LEADER a] : mark file
 * kbd:[<C-t>] : shows Harpoon quick menu
 * kbd:[LEADER j a] : jumo to file 1
-* kbd:[LEADER j s] : jumo to file 1
-* kbd:[LEADER j d] : jumo to file 1
-* kbd:[LEADER j f] : jumo to file 1
+* kbd:[LEADER j s] : jumo to file 2
+* kbd:[LEADER j d] : jumo to file 3
+* kbd:[LEADER j f] : jumo to file 4
 
 ### LSP
 
@@ -275,7 +275,7 @@ _In visual mode_
 ### Copilot
 * kbd:[<M-y>] : accept the whole suggestion
 * kbd:[<M-u>] : accept line
-* kbd:[<M-u>] : accept word
+* kbd:[<M-i>] : accept word
 * kbd:[<M-[>] : previous suggestion
 * kbd:[<M-\]>] : next suggestion
 * kbd:[<C-\]>] : dismiss
