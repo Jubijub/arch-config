@@ -1,6 +1,8 @@
 :experimental:
 
-# Linux Config files
+# Legacy Linux Config files
+
+CAUTION: **This is my "old"** config featuring Hyprland. I have since moved to automatic install scripts which you can find in `arch_install_scripts` in this repository, one directory up. I keep those for historical value. It's no longer maintained and may contain outdated tools / configuration options
 
 ## Introduction
 
