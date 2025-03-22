@@ -28,17 +28,13 @@ vim.api.nvim_create_autocmd('LspAttach', {
         vim.keymap.set('n', '<leader>dl', function() vim.diagnostic.open_float() end, opts)
         vim.keymap.set('n', '[d', function() vim.diagnostic.goto_next() end, opts)
         vim.keymap.set('n', ']d', function() vim.diagnostic.goto_prev() end, opts)
+        vim.keymap.set('n', '<leader>dd', '<cmd>Telescope diagnostics<CR>', { noremap = true, silent = true })
     end
 })
 
 -- Mason configuration
 require("mason").setup()
 require("mason-lspconfig").setup {}
-
--- vim lua api - must be enabled before lspconfig
-require("neodev").setup({
-    -- add any options here, or leave empty to use the default settings
-})
 
 local lspconfig = require('lspconfig')
 
@@ -140,71 +136,70 @@ for _, server_name in ipairs(get_servers()) do
     })
 end
 
-require('lspconfig').pylsp.setup {
+require('lspconfig').ruff.setup({
+    init_options = {
+        settings = {
+            -- Ruff language server settings go here
+        }
+    }
+})
+
+vim.api.nvim_create_autocmd("LspAttach", {
+    group = vim.api.nvim_create_augroup('lsp_attach_disable_ruff_hover', { clear = true }),
+    callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if client == nil then
+            return
+        end
+        if client.name == 'ruff' then
+            -- Disable hover in favor of Pyright
+            client.server_capabilities.hoverProvider = false
+        end
+    end,
+    desc = 'LSP: Disable hover capability from Ruff',
+})
+
+require("lspconfig").basedpyright.setup {
     settings = {
-        pylsp = {
-            plugins = {
-                jedi_completion = {
-                    enabled = true,
-                    eager = true,
-                    cache_for = { "numpy", "scipy" }
-                },
-                jedi_definition = {
-                    enabled = true,
-                    follow_imports = true,
-                    follow_builtin_imports = true,
-                },
-                jedi_hover = { enabled = true },
-                jedi_references = { enabled = true },
-                jedi_signature_help = { enabled = true },
-                jedi_symbols = { enabled = true, all_scopes = true, include_import_symbols = true },
-                preload = { enabled = true, modules = { "numpy", "scipy" } },
-                isort = { enabled = false },
-                spyder = { enabled = false },
-                memestra = { enabled = false },
-                pycodestyle = { enabled = false }, -- not work
-                flake8 = { enabled = false },
-                pyflakes = { enabled = false },
-                yapf = { enabled = true },
-                pylint = { enabled = false },
-                ruff = {
-                    enabled = true,
-                    extendSelect = { "I" },
-                },
-                black = { enabled = true }
+        basedpyright = {
+            disableOrganizeImports = true,
+            analysis = {
+                autoImportCompletions = true,
+                diagnosticMode = "openFilesOnly",
+                useLibraryCodeForType = true,
+                inlayHints = {
+                    callArgumentNames = true
+                }
             }
         }
     }
 }
 
-require('lspconfig').htmx.setup {}
-
-require('lspconfig').lua_ls.setup {
+require 'lspconfig'.lua_ls.setup {
     on_init = function(client)
-        local path = client.workspace_folders[1].name
-        if not vim.loop.fs_stat(path .. '/.luarc.json') and not vim.loop.fs_stat(path .. '/.luarc.jsonc') then
-            client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
-                runtime = {
-                    -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
-                    version = 'LuaJIT'
-                },
-                -- Make the server aware of Neovim runtime files
-                workspace = {
-                    library = { vim.env.VIMRUNTIME }
-                    -- or pull in all of 'runtimepath'. NOTE: this is a lot slower
-                    -- library = vim.api.nvim_get_runtime_file("", true)
-                }
-            })
-
-            client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
+        if client.workspace_folders then
+            local path = client.workspace_folders[1].name
+            if vim.uv.fs_stat(path .. '/.luarc.json') or vim.uv.fs_stat(path .. '/.luarc.jsonc') then
+                return
+            end
         end
-        return true
+
+        client.config.settings.Lua = vim.tbl_deep_extend('force', client.config.settings.Lua, {
+            diagnostics = {
+                globals = { 'vim' }
+            },
+            runtime = {
+                version = 'LuaJIT'
+            },
+            workspace = {
+                checkThirdParty = false,
+                library = {
+                    vim.env.VIMRUNTIME
+                }
+            }
+        })
     end,
     settings = {
-        Lua = {
-            completion = {
-                callSnippet = "Replace"
-            }
-        }
+        Lua = {}
     }
 }
