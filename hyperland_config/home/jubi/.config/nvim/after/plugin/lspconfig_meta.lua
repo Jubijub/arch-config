@@ -26,8 +26,8 @@ vim.api.nvim_create_autocmd('LspAttach', {
             vim.lsp.buf.format { async = true }
         end, opts)
         vim.keymap.set('n', '<leader>dl', function() vim.diagnostic.open_float() end, opts)
-        vim.keymap.set('n', '[d', function() vim.diagnostic.goto_next() end, opts)
-        vim.keymap.set('n', ']d', function() vim.diagnostic.goto_prev() end, opts)
+        vim.keymap.set('n', ']d', function() vim.diagnostic.get_next() end, opts)
+        vim.keymap.set('n', '[d', function() vim.diagnostic.get_prev() end, opts)
         vim.keymap.set('n', '<leader>dd', '<cmd>Telescope diagnostics<CR>', { noremap = true, silent = true })
     end
 })
@@ -136,13 +136,13 @@ for _, server_name in ipairs(get_servers()) do
     })
 end
 
-require('lspconfig').ruff.setup({
+require('lspconfig').ruff.setup {
     init_options = {
         settings = {
-            -- Ruff language server settings go here
+            logLevel = 'debug',
         }
     }
-})
+}
 
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup('lsp_attach_disable_ruff_hover', { clear = true }),

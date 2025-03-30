@@ -19,4 +19,21 @@ require 'nvim-treesitter.configs'.setup {
 
         additional_vim_regex_highlighting = false,
     },
+    textobjects = {
+        select = {
+            enable = true,
+            lookahead = true,
+            keymaps = {
+                -- outer: outer part
+                -- inner: inner part
+                ["af"] = "@function.outer",
+                ["if"] = "@function.inner",
+                ["ac"] = "@class.outer",
+                ["ic"] = "@class.inner",
+                ["al"] = "@loop.outer",
+                ["il"] = "@loop.inner",
+            },
+            include_surrounding_whitespace = true,
+        },
+    },
 }
