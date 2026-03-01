@@ -33,10 +33,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 
 -- Mason configuration
-require("mason").setup()
+require("mason").setup({
+    ensure_installed = { "ty" },
+})
 require("mason-lspconfig").setup {}
-
-local lspconfig = require('lspconfig')
 
 -- autocomplete configuration
 local cmp = require('cmp')
@@ -127,22 +127,18 @@ vim.api.nvim_set_hl(0, "CmpItemKindTypeParameter", { fg = "#24273A", bg = "#8BD5
 -- LSP servers configuration
 ------------------------------------------------------------------------------
 
-local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
-local get_servers = require('mason-lspconfig').get_installed_servers
+-- Apply cmp capabilities to all servers
+vim.lsp.config('*', {
+    capabilities = require('cmp_nvim_lsp').default_capabilities(),
+})
 
-for _, server_name in ipairs(get_servers()) do
-    lspconfig[server_name].setup({
-        capabilities = lsp_capabilities,
-    })
-end
-
-require('lspconfig').ruff.setup {
+vim.lsp.config('ruff', {
     init_options = {
         settings = {
             logLevel = 'debug',
         }
     }
-}
+})
 
 vim.api.nvim_create_autocmd("LspAttach", {
     group = vim.api.nvim_create_augroup('lsp_attach_disable_ruff_hover', { clear = true }),
@@ -152,30 +148,16 @@ vim.api.nvim_create_autocmd("LspAttach", {
             return
         end
         if client.name == 'ruff' then
-            -- Disable hover in favor of Pyright
+            -- Disable hover in favor of ty
             client.server_capabilities.hoverProvider = false
         end
     end,
     desc = 'LSP: Disable hover capability from Ruff',
 })
 
-require("lspconfig").basedpyright.setup {
-    settings = {
-        basedpyright = {
-            disableOrganizeImports = true,
-            analysis = {
-                autoImportCompletions = true,
-                diagnosticMode = "openFilesOnly",
-                useLibraryCodeForType = true,
-                inlayHints = {
-                    callArgumentNames = true
-                }
-            }
-        }
-    }
-}
+vim.lsp.enable('ty')
 
-require 'lspconfig'.lua_ls.setup {
+vim.lsp.config('lua_ls', {
     on_init = function(client)
         if client.workspace_folders then
             local path = client.workspace_folders[1].name
@@ -202,4 +184,4 @@ require 'lspconfig'.lua_ls.setup {
     settings = {
         Lua = {}
     }
-}
+})
