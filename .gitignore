@@ -99,3 +99,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+#VScode
+.vscode
+.claude

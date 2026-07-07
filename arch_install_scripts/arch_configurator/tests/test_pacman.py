@@ -22,8 +22,8 @@ class TestPackageManagement:
     def test_is_installed_multiple_packages_all_found(self, mock_run):
         """Test checking multiple packages - all found"""
         mock_run.side_effect = [
-            MagicMock(stdout="local/wget 1.21.3-1", returncode=0),
-            MagicMock(stdout="local/curl 7.88.1-1", returncode=0)
+            MagicMock(stdout="local/wget 1.21.3-1\nlocal/curl 7.88.1-1", returncode=0),  # paru -Qs
+            MagicMock(stdout="", returncode=0),  # paru -Qm
         ]
         assert is_installed("wget curl") == True
     
@@ -45,7 +45,7 @@ class TestPackageManagement:
         
         install("test-package")
         
-        mock_run.assert_called_once_with("pacman -S test-package --noconfirm", as_root=True)
+        mock_run.assert_called_once_with("paru -S test-package --noconfirm")
     
     @patch('arch_configurator.pacman.run')
     @patch('arch_configurator.pacman.is_installed')
@@ -67,7 +67,7 @@ class TestPackageManagement:
         
         install("package1 package2")
         
-        mock_run.assert_called_once_with("pacman -S package1 --noconfirm", as_root=True)
+        mock_run.assert_called_once_with("paru -S package1 --noconfirm")
     
     @patch('arch_configurator.pacman.run')
     @patch('arch_configurator.pacman.make_directory')

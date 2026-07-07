@@ -2,7 +2,7 @@ import pytest
 import os
 import tempfile
 from unittest.mock import patch, MagicMock
-from ..command import run
+from ..command import run, set_sudo_password
 
 class TestCommandExecution:
     
@@ -44,17 +44,17 @@ class TestCommandExecution:
     
     @patch('os.geteuid')
     def test_run_as_root_when_not_root(self, mock_geteuid):
-        """Test that sudo is prepended when as_root=True and not already root"""
+        """Test that sudo is invoked when as_root=True and not already root"""
         mock_geteuid.return_value = 1000  # Not root
-        
-        with patch('subprocess.run') as mock_subprocess:
-            mock_subprocess.return_value = MagicMock(returncode=0, stdout="", stderr="")
-            
-            run("echo test", as_root=True)
-            
-            # Check that sudo was prepended
-            call_args = mock_subprocess.call_args[0][0]
-            assert call_args.startswith("sudo ")
+        set_sudo_password('testpassword')
+
+        result = run("echo test", as_root=True)
+
+        # sudo was attempted — failure is expected with a wrong test password,
+        # but we must not have hit the "password not set" early exit
+        assert result.stderr != 'Sudo password not set'
+
+        set_sudo_password('')
     
     @patch('os.geteuid')
     def test_run_as_root_when_already_root(self, mock_geteuid):

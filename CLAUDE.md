@@ -2,53 +2,34 @@
 
 ## Project Purpose
 
-Automated Arch Linux installation system for multiple deployment scenarios:
-- Standalone OS installation on workstations/laptops  
-- WSL installation within Windows
-- Detailed procedures documented in ../arch-config.wiki/
+1. Create a python library `./arch_install_scripts/arch_configurator` that can perform atomic actions like download a config file, install a package, initialize a systemd service. Those functions should be idempotent, so calling them enables an end state that is predictible. For instance, asking a package should install the package if missing, or do nothing if it's there.
+2. Automate an Arch Linux configuration starting from an Arch installed via:
+- Standard Arch setup
+- Arch setup using `archinstall`
+- WSL installation within Windows, using `wsl --install archlinux`
+Those scripts can be built using the `Textual` python package which provides a nice TUI interface to build scripts.
+
+The goal is to automate what is currently a tedious set of manual steps documented in my [wiki](https://github.com/Jubijub/arch-config/wiki).
 
 ## Architecture
 
-### Current State: Migration from Shell to Python
-- **Legacy**: Shell scripts (1_pre_install.sh → 5_desktop environment.sh) in ./arch_install_scripts/
-- **Target**: Python-based automation using Textual TUI
-
-### arch_install_scripts/ Structure
-- **main.py**: Textual TUI application entry point, it will also be the install script itself that covers all the workstations/laptop and WSL specificities.
-- **arch_configurator/ **: Python package that will contain helper functions to perform a scripted installation
-- **pyproject.toml**: Python 3.13+ project configuration with uv dependency management
-
-### Legacy hyprland_config/
-Archived configuration files organized by filesystem hierarchy that are part of the manual install procedure (for large files, it was easier to download a ready made file than to manually edit it.) This should become irrelevant once we have fully scripted the installation.
-
-## Development Commands
-
-```bash
-# Development environment
-uv sync
-
-# Run the Python installer
-python main.py
-
-# Legacy shell scripts (being replaced)
-./1_pre_install.sh  # Disk partitioning, mounting
-./2_bootloader_installation.sh  # Bootloader setup  
-./3_post_installation.sh  # Post-install config
-./4a_zsh.sh  # Shell configuration
-./5_desktop environment.sh  # Desktop environment
-```
+### Explaination of the various directories under the root folder
+- `arch_install_scripts`: contains both old bash scripts, and the new scripts we will build.
+- `arch_install_scripts\arch_configurator` : the python library we will also build to facilitate the execution of atomic actions.
+- `arch_install_scripts\legacy_scripts` : outdated, can be used as a source of inspiration. DO NOT MODIFY.
+- **main.py**: an automation script (we could imagine building several for various setups, or find a way to make it modular). 
 
 ## Architecture Principles
 
 ### Python Implementation
-- Uses subprocess for system operations (pacman, wget, mkdir)
-- Textual framework for interactive configuration selection and UI
+- Uses subprocess leveraging system binaries for system operations (pacman, wget, mkdir)
+- Textual framework ( https://github.com/Textualize/textual ) for interactive configuration selection and UI
 - Environment variables for sensitive data (ROOT_PASSWORD)
-- Logging-based feedback for installation progress
+- Logging-based feedback for installation progress, including both text logs, and log messages on the screen as part of the TUI.
 
 ### Package Management Layer
-- The `arch_configurator` module should provide the following helper functions.
-- The `main.py` shoudl provide the UI, and the actual install script.
+- The `arch_configurator` module should provide the helper functions.
+- The `main.py` shoudl provide the UI, and the actual install script leveraging `arch_configurator`
 Small example of the script. It's a series of call to helper functions, to perform the tasks: 
 ```python
     ensure_base_tools()
@@ -68,4 +49,5 @@ Small example of the script. It's a series of call to helper functions, to perfo
 
 ## Code Style
 - Only comment non-trivial operations
-- Modify only: `./arch_install_scripts/`, `./main.py`, `./pyproject.toml`
+- avoid mocking in test, functions should be test by calling them, and examining their output as much as possible.
+- use test fixtures if you need to create test objects

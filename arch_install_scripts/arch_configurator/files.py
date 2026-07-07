@@ -3,34 +3,53 @@ import os
 import re
 import shutil
 from .command import run
+from .result import StepResult
+
+
+def github_tree_to_raw(url: str) -> str:
+    """Convert a GitHub tree URL to a raw.githubusercontent.com URL."""
+    return re.sub(
+        r'https://github\.com/([^/]+)/([^/]+)/tree/(.+)',
+        r'https://raw.githubusercontent.com/\1/\2/\3',
+        url,
+    )
 
 logger = logging.getLogger(__name__)
 
-def download(url: str, target_directory: str, overriden_filename: str = None) -> None:
+def download(url: str, target_directory: str, overriden_filename: str = None) -> StepResult:
     """Fetch files with wget to specified directories"""
     expanded_target = os.path.expanduser(target_directory)
-    
+
     # Handle shell expansion like $(bat --config-dir)
     if '$(' in expanded_target:
         result = run(f'echo "{expanded_target}"', as_root=False)
         if result.returncode == 0:
             expanded_target = result.stdout.strip()
-    
+
+    filename = overriden_filename or os.path.basename(url)
+    full_path = os.path.join(expanded_target, filename)
+
+    if os.path.exists(full_path):
+        logger.info("File already exists, skipping: %s", full_path)
+        return StepResult.NO_CHANGE
+
     make_directory(expanded_target)
-    
+
     try:
         if overriden_filename:
-            full_path = os.path.join(expanded_target, overriden_filename)
             result = run(f'wget -O "{full_path}" "{url}"', as_root=os.access(expanded_target, os.W_OK) == False)
         else:
             result = run(f'wget -P "{expanded_target}" "{url}"', as_root=os.access(expanded_target, os.W_OK) == False)
-        
+
         if result.returncode != 0:
             logger.error("An error occurred while downloading %s", url)
+            return StepResult.ERROR
         else:
             logger.info("Downloaded %s successfully", url)
+            return StepResult.SUCCESS
     except Exception as e:
         logger.error("Download failed: %s", str(e))
+        return StepResult.ERROR
 
 def make_directory(path: str) -> None:
     """Create directory structures with mkdir -p behavior"""
