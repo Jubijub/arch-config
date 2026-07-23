@@ -1,1 +1,0 @@
-xrfb -merge ~/.Xresources

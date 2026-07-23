@@ -1,93 +1,79 @@
 :experimental:
 
-# Legacy Linux Config files
-
-CAUTION: **This is my "old"** config featuring Hyprland. I have since moved to automatic install scripts which you can find in `arch_install_scripts` in this repository, one directory up. I keep those for historical value. It's no longer maintained and may contain outdated tools / configuration options
+# Linux config files (Arch + Hyprland)
 
 ## Introduction
 
-This project contains various files I use to configure my Linux OS (https://www.archlinux.org/[Arch Linux]), my shell (https://www.zsh.org/[ZSH]) my terminal client (https://sw.kovidgoyal.net/kitty/[kitty]), and my Window manager (https://hyprland.org[Hyperland]).
+This directory holds the configuration for my https://www.archlinux.org/[Arch Linux]
+machines: my shell (https://fishshell.com[fish], with https://www.zsh.org/[zsh] as a
+fallback), my terminal (https://ghostty.org[ghostty]), and my Wayland compositor
+(https://hyprland.org[Hyprland]) with the https://github.com/noctalia-dev/noctalia-shell[Noctalia]
+bar/shell.
 
-Feel free to copy those scripts, but use at your own risks.
+The full step-by-step is in the
+https://github.com/Jubijub/arch-config/wiki[arch-config wiki].
 
-## Screenshots
+Feel free to copy anything here, but use at your own risk.
 
-.VScode, Kitty with Powerline10k and Git, Chrome
-image::vscode-git-chrome.png[VScode, Kitty with Powerline10k and Git, Chrome]
+## Deployment (chezmoi)
 
-.Bat showing config.py, bottom and neofetch
-image::bat_btm_neofetch.png[Bat showing config.py, bottom and neofetch]
+These files are managed with https://www.chezmoi.io[chezmoi], which handles both
+deployment and the per-machine differences (workstation vs laptop). The source
+layout uses chezmoi's conventions (`dot_config/` -> `~/.config`, `*.tmpl` for
+templated files, `private_` for 0700 dirs). See
+https://github.com/Jubijub/arch-config/wiki/5.Post-installation#deploy-dotfiles-with-chezmoi[the
+chezmoi section of the wiki] for the bootstrap.
 
+* `.chezmoi.toml.tmpl` asks once whether the machine is `workstation` or `laptop`
+  and stores the answer; no hostnames are hardcoded.
+* `hyprland.lua` and `noctalia/config.toml` are templates that branch on that role
+  (monitors, GPU, battery/backlight).
+* `system/` holds verbatim `/etc` drop-ins that chezmoi can't manage directly (it
+  only touches `$HOME`); `.chezmoiscripts/run_onchange_install-system-files.sh.tmpl`
+  installs them with `sudo` on `chezmoi apply`.
 
-## Tools I use
-I describe my system config in this https://github.com/Jubijub/arch-config/wiki/1.Home[howto], so you can see how I install those tools. I mostly use Arch/AUR packages where possible.
+## Tools
 
 ### Themes
-* Color Theme : https://github.com/catppuccin/catppuccin[Catppuccin-Macchiato] - super good looking pastel theme
-* Icon theme : https://github.com/PapirusDevelopmentTeam/papirus-icon-theme[Papirus-Dark]
-* Cursor theme = https://github.com/catppuccin/cursors[Catppuccin-Macchiato-Dark]
-* Font : https://www.jetbrains.com/lp/mono/[Jetbrains Mono] with https://www.nerdfonts.com/[Nerd fonts patch].
+* Colors: https://github.com/catppuccin/catppuccin[Catppuccin Mocha]
+* Font: https://www.jetbrains.com/lp/mono/[JetBrains Mono] / CaskaydiaCove, with the
+  https://www.nerdfonts.com/[Nerd Fonts] patch
+* GTK apps are forced dark via `gsettings ... color-scheme prefer-dark` (no theme
+  engine -- full GTK theming was given up as too flaky).
 
-### Software
+### Shell & CLI
+* https://fishshell.com[fish] : main shell, with https://github.com/jorgebucaran/fisher[Fisher]
+  plugins and https://starship.rs[Starship].
+* https://www.zsh.org[zsh] : POSIX-ish fallback, deliberately plugin-free.
+* https://github.com/junegunn/fzf[fzf] : fuzzy history / file search.
+* https://github.com/sharkdp/bat[bat] : `cat` with syntax highlighting.
+* https://github.com/eza-community/eza[eza] : a modern `ls` replacement (colors, git-aware).
+* https://github.com/sharkdp/fd[fd] and https://github.com/BurntSushi/ripgrep[ripgrep].
+* https://docs.astral.sh/uv/[uv] : Python packaging / venv manager.
+* https://wiki.archlinux.org/title/reflector[reflector] : picks the fastest Arch mirrors.
 
-* https://sw.kovidgoyal.net/kitty/[kitty] : my favourite terminal emulator : it's fast, it's well documented, it supports ligatures.
+### Desktop
+* https://ghostty.org[ghostty] : terminal (ships a corrected Catppuccin Mocha theme).
+* https://github.com/noctalia-dev/noctalia-shell[Noctalia] : Wayland bar + shell.
+* https://flameshot.org/[Flameshot] : screenshots with editing.
 
+## Layout
 
-### Command line utilities / Development tools
+`dot_config/` maps to `~/.config`, `dot_zshrc`/`dot_zshenv` to `~/.zshrc`/`~/.zshenv`,
+`dot_local/` to `~/.local`. Highlights:
 
-My shell installation procedure is described https://github.com/Jubijub/arch-config/wiki/5.Post-installation[here].
-
-* https://fishshell.com[fish] : my main shell, for its completions and built-in suggestions. Configured with https://github.com/jorgebucaran/fisher[Fisher] plugins and https://starship.rs[Starship].
-* https://www.zsh.org[zsh] : kept only as a POSIX-ish fallback for the rare cases where fish does not fit. Deliberately plugin-free : no oh-my-zsh, no package manager, no theme engine.
-* https://github.com/junegunn/fzf[fzf] : a fuzzy search tool to search command line history. I couldn't live without this.
-* https://github.com/sharkdp/bat[bat]: a replacement to `cat` with syntax highlighting, line numbering, etc...
-* https://the.exa.website/[exa] : a replacement for `ls` with colors, git aware, highly configurable
-* https://github.com/dylanaraps/neofetch[neofetch] : command line system information, used for my screenshots.
-* https://python-poetry.org/[Poetry] : a python packaging and dependency (and virtualenv) manager.
-* https://wiki.archlinux.org/title/reflector[reflector] : a script that test the speed of Archlinux mirror, and picks the most suitable to overwrite the mirrorlist.
-
-### Desktop environment
-* https://github.com/dunst-project/dunst[dunst] : a customizable notification system
-* https://flameshot.org/[Flameshot] : a screenshot software with good editing capabilities (arrows, frames, text)
-* https://github.com/yshui/picom[picom (picom-git)] : a window compositor which enables gaps, window transparency on a per program basis
-* https://www.qtile.org[qtile] : the Qtile window manager (configured in Python)
-* https://github.com/davatorium/rofi[rofi] : an app launcher and a window switcher.
-
-## Config files
-The file hierarchy mimics the target structure on the disk, so if you find a file in `a/b/c/file.ext`, it should be copied in `/a/b/c/file.ext`.
-
-### etc
-
-* `/etc/pacman.d/hooks` : various hooks for reflector, nvidia, and systemd-boot
-  ** `mirrorupgrade.hook` : triggers `reflector` to upgrade pacman mirrorlist after each pacman-mirrorlist package update (also cleans the mirrorlist.pacnew)
-  ** `nvidia.hook` : triggers `mkinitcpio` after each nvidia / nvidia-lts drivers package update
-  ** `systemd-boot.hook` : triggers a systemd-boot update after each systemd-boot package update
-* `/etc/X11/xorg.conf.d/20-nvidia.conf` : the X.org config that works with my nVidia RTX 3090 and my dual screen setup
-* `/etc/locale.conf` : my wierd locale setup where local is set to fr_CH, but my display language is English.
-* `/etc/resolvconf.conf` : resolvconf config to set Google DNS as the machine DNS.
-
-### home/jubi
-
-* `/home/jubi/.config/bat/*` : sets the bat theme as Catppuccin-machiato (also contains the theme files themselves, from Catppuccin https://github.com/catppuccin/bat[repository])
-* `/home/jubi/.config/dunst/*` : sets the dunst theme as Catppuccin-machiato (from Catppuccin dunst https://github.com/catppuccin/dunst[repository])
-* `/home/jubi/.config/flameshot/*` : instructs Flameshot to save screenshots as PNG in my Downloads folder
-* `/home/jubi/.config/gtk-3.0/*` : GTK 3.0 theme configuration to use the Catppuccin color/cursor, and Papirus-Dark icons.
-* `/home/jubi/.config/kitty/*` : instructs Kitty to use Catppuccin machiatto colors, and Jetbrains Mono Nerd font.
-* `/home/jubi/.config/neofetch/*` : light changes to display more information
-* `/home/jubi/.config/picom/*` : Gaps, window transparency with active window being less opaque
-* `/home/jubi/.config/pypoetry/*`: Python Poetry config instructing to put virtualenvs in a specific folder.
-* `/home/jubi/.config/qtile/*`: 
-  * `qtile_icons`: layout icons matching the catppuccino color theme
-  * `autostart.sh` : configures X (via xrandr) for my dual screen, loads picom, qtile, etc...
-  * `config.py` : my qtile config file
-* `/home/jubi/.config/rofi/*`: Rofi with https://github.com/catppuccin/rofi[catppuccin theme].
-* `/home/jubi/.local/share/backgrounds` : the https://www.deviantart.com/dpcdpc11/art/Beyond-the-Clouds-Wallpaper-Pack-5120x2880px-915981762["Beyond the clouds"] desktop wallaper I use which goes well with Catppuccin colors, courtesy of https://www.deviantart.com/dpcdpc11[dpcdpc11].
-
-* `/home/jubi/.xinitrc` and `/home/jubi/.Xresources` : sets my X theme as Catppuccin Machiatto.
-* `/home/jubi/.zshrc` and `/home/jubi/.zshenv` : my .zshrc : see my https://github.com/Jubijub/arch-config/wiki/5.Post-installation#configure-zsh[howto] on how I configure my ZSH.
+* `dot_config/hypr/hyprland.lua.tmpl` : Hyprland (machine-templated).
+* `dot_config/noctalia/config.toml.tmpl` : Noctalia bar (machine-templated).
+* `dot_config/ghostty/` : ghostty config + corrected Catppuccin Mocha theme.
+* `dot_config/{bat,btop,fish,flameshot,tmux}/`, `dot_config/starship.toml` : CLI tools.
+* `dot_config/nvim/` : Neovim config.
+* `dot_config/pipewire/` : PipeWire tweaks.
+* `dot_config/gtk-3.0/bookmarks` : Nautilus sidebar bookmarks.
+* `dot_local/share/wallpapers/` : wallpapers.
+* `system/etc/` : `/etc` drop-ins (locale, resolvconf, reflector, pacman hooks, and
+  the Legion-only `90-hypr-gpu.rules`), installed by the run-script.
 
 ## Keybindings
 
-* https://github.com/Jubijub/arch-config/blob/master/keybindings-qtile.asciidoc[Qtile]
 * https://github.com/Jubijub/arch-config/blob/master/keybindings-tmux.asciidoc[tmux]
 * https://github.com/Jubijub/arch-config/blob/master/keybindings-neovim.asciidoc[Neovim]

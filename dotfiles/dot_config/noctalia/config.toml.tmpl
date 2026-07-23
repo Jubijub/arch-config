@@ -1,0 +1,41 @@
+# Noctalia hand-written config (config layer).
+# Loads after built-in defaults, before the GUI-managed state layer
+# (~/.local/state/noctalia/settings.toml), which WINS on conflicts. So if you
+# later edit the bar in the settings GUI, that overrides what's written here.
+
+# ── Bar ───────────────────────────────────────────────────────────────────────
+# A bar named "default" is spawned on every connected monitor. Widgets are placed
+# in three lanes: start (left), center, end (right). A bare name uses that widget
+# type with default settings; to customise one, add a matching [widget.<name>].
+#
+# Note: no "sysmon" widget here on purpose. The system-monitor widget is what
+# starts noctalia's SystemMonitorService, which on this hybrid laptop probes the
+# NVIDIA dGPU via NVML and keeps it awake. Leaving it out means the dGPU stays
+# suspended (D3cold) for battery. Add a sysmon widget back if you ever want it.
+[bar.default]
+position = "top"
+
+start  = ["launcher", "workspaces"]
+center = ["clock"]
+{{ if eq .machine "laptop" -}}
+end    = ["tray", "clipboard", "network", "bluetooth", "volume", "brightness", "battery", "control-center", "notifications", "session"]
+{{- else -}}
+# workstation (takemyheataway): no laptop panel backlight and no battery, so the
+# "brightness" and "battery" widgets are dropped from the end lane.
+end    = ["tray", "clipboard", "network", "bluetooth", "volume", "control-center", "notifications", "session"]
+{{- end }}
+
+# The workspaces widget can only render a workspace's `id` or its `name` -- there
+# is no per-workspace icon mapping. So the persistent workspaces in
+# ~/.config/hypr/hyprland.lua are *named* after a Nerd Font glyph (󰆍 󰖟 󰘦) and we
+# display the name verbatim. `max_label_chars = 2` keeps a stray long name from
+# stretching the bar; numeric ids are never truncated.
+[widget.workspaces]
+display         = "name"
+max_label_chars = 2
+scale      = 1.4
+pill_scale = 1.2
+
+[system.monitor]
+# This should be the default, setting it explicitely to be sure.
+gpu_poll_seconds = 0

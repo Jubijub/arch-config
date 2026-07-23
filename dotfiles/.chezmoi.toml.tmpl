@@ -1,0 +1,14 @@
+# Rendered by `chezmoi init` into ~/.config/chezmoi/chezmoi.toml.
+#
+# Host identity is chosen ONCE, interactively, at `chezmoi init` time and stored
+# in the generated (untracked) config. It is NOT derived from the hostname, so
+# renaming a machine never breaks anything and no hostname strings are hardcoded
+# anywhere in the tracked tree. Every template branches on .machine, comparing it
+# to "workstation" or "laptop".
+#
+# sourceDir lets the repo live outside $HOME. Re-run `chezmoi init` to change the
+# stored machine role.
+sourceDir = "/projects/config/arch-config/dotfiles"
+
+[data]
+    machine = {{ promptStringOnce . "machine" "Machine role (workstation / laptop)" | quote }}

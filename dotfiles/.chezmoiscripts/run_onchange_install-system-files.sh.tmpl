@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+#
+# Installs the repo's system/ drop-in files into /etc. chezmoi only manages
+# files under $HOME, so these "pure copy" system files are deployed here instead,
+# on `chezmoi apply`. This uses sudo, so `chezmoi apply` will prompt for a
+# password when any of these files change.
+#
+# This is ONLY for files that are copied verbatim. In-place edits of
+# package-created files (greetd/config.toml, mkinitcpio.conf, pacman.conf,
+# bootloader entries, the localectl-generated 00-keyboard.conf, ...) are NOT
+# here -- they stay documented as manual steps in the wiki.
+#
+# run_onchange_: re-runs whenever this rendered script changes. The file hashes
+# embedded at the bottom make it re-run when any installed file changes.
+set -euo pipefail
+
+SRC="{{ .chezmoi.sourceDir }}/system"
+
+install_file() {
+    # $1 = path under system/ ; installed to the mirrored absolute path (root:root, 0644)
+    sudo install -Dm644 "$SRC/$1" "/$1"
+    echo "  installed /$1"
+}
+
+echo "Installing managed system files into /etc ..."
+
+# --- shared on every machine ---
+install_file "etc/locale.conf"
+install_file "etc/resolvconf.conf"
+install_file "etc/xdg/reflector/reflector.conf"
+install_file "etc/pacman.d/hooks/mirrorupgrade.hook"
+install_file "etc/pacman.d/hooks/nvidia.hook"
+install_file "etc/pacman.d/hooks/systemd-boot.hook"
+
+{{ if eq .machine "laptop" -}}
+# --- laptop only: stable Intel iGPU / NVIDIA dGPU DRM symlinks for AQ_DRM_DEVICES ---
+install_file "etc/udev/rules.d/90-hypr-gpu.rules"
+sudo udevadm control --reload
+sudo udevadm trigger
+{{- end }}
+
+echo "Done."
+
+# --- change detection (do not edit): source file hashes ---
+# locale.conf         {{ include "system/etc/locale.conf" | sha256sum }}
+# resolvconf.conf     {{ include "system/etc/resolvconf.conf" | sha256sum }}
+# reflector.conf      {{ include "system/etc/xdg/reflector/reflector.conf" | sha256sum }}
+# mirrorupgrade.hook  {{ include "system/etc/pacman.d/hooks/mirrorupgrade.hook" | sha256sum }}
+# nvidia.hook         {{ include "system/etc/pacman.d/hooks/nvidia.hook" | sha256sum }}
+# systemd-boot.hook   {{ include "system/etc/pacman.d/hooks/systemd-boot.hook" | sha256sum }}
+{{ if eq .machine "laptop" -}}
+# 90-hypr-gpu.rules   {{ include "system/etc/udev/rules.d/90-hypr-gpu.rules" | sha256sum }}
+{{- end }}
