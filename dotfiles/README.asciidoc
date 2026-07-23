@@ -35,13 +35,11 @@ I describe my system config in this https://github.com/Jubijub/arch-config/wiki/
 
 ### Command line utilities / Development tools
 
-My ZSH installation procedure is described https://github.com/Jubijub/arch-config/wiki/5.Post-installation#configure-zsh[here].
+My shell installation procedure is described https://github.com/Jubijub/arch-config/wiki/5.Post-installation[here].
 
-* https://www.zsh.org[zsh] : a better alternative to Bash, with strong completion. Eminently themable with powerlevel10k. Note : I do not use oh-my-zsh or any package manager, which keeps my zsh light and predictible.
-  ** https://github.com/romkatv/powerlevel10k[Powerlevel10k] : a fantastic and blazing fast Zsh theme
-  ** https://github.com/zdharma-continuum/fast-syntax-highlighting[Fast-Syntax-highlighting] : on the fly syntax highlighting when typing commands.
-  ** https://github.com/zsh-users/zsh-autosuggestions[Autosuggestions] : fish like autosuggestions based on history
-  ** https://github.com/junegunn/fzf[fzf] : a fuzzy search tool to search command line history. I couldn't live without this.
+* https://fishshell.com[fish] : my main shell, for its completions and built-in suggestions. Configured with https://github.com/jorgebucaran/fisher[Fisher] plugins and https://starship.rs[Starship].
+* https://www.zsh.org[zsh] : kept only as a POSIX-ish fallback for the rare cases where fish does not fit. Deliberately plugin-free : no oh-my-zsh, no package manager, no theme engine.
+* https://github.com/junegunn/fzf[fzf] : a fuzzy search tool to search command line history. I couldn't live without this.
 * https://github.com/sharkdp/bat[bat]: a replacement to `cat` with syntax highlighting, line numbering, etc...
 * https://the.exa.website/[exa] : a replacement for `ls` with colors, git aware, highly configurable
 * https://github.com/dylanaraps/neofetch[neofetch] : command line system information, used for my screenshots.
@@ -85,7 +83,6 @@ The file hierarchy mimics the target structure on the disk, so if you find a fil
 * `/home/jubi/.config/rofi/*`: Rofi with https://github.com/catppuccin/rofi[catppuccin theme].
 * `/home/jubi/.local/share/backgrounds` : the https://www.deviantart.com/dpcdpc11/art/Beyond-the-Clouds-Wallpaper-Pack-5120x2880px-915981762["Beyond the clouds"] desktop wallaper I use which goes well with Catppuccin colors, courtesy of https://www.deviantart.com/dpcdpc11[dpcdpc11].
 
-* `/home/jubi/.p10k.zsh` : my ZSH Powerlevel10k configuration. I suggest you use the `p10k configure` to generate the file, and just use this for reference.
 * `/home/jubi/.xinitrc` and `/home/jubi/.Xresources` : sets my X theme as Catppuccin Machiatto.
 * `/home/jubi/.zshrc` and `/home/jubi/.zshenv` : my .zshrc : see my https://github.com/Jubijub/arch-config/wiki/5.Post-installation#configure-zsh[howto] on how I configure my ZSH.
 

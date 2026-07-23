@@ -1,26 +1,17 @@
+# XDG Base directories
+set -gx XDG_CONFIG_HOME $HOME/.config
+set -gx XDG_DATA_HOME $HOME/.local/share
+if not set -q XDG_DATA_DIRS
+    set -gx --path XDG_DATA_DIRS /usr/local/share /usr/share
+end
+
+## Core env variables
+set -gx EDITOR nvim
+
 if status is-interactive
-    fish_add_path -p $HOME/.local/bin # for PyPoetry
-    fish_add_path $HOME/.pyenv # for PyEnv
-    fish_add_path -p /opt/cuda/bin
-    fish_add_path -p /usr/local/sbin /usr/local/bin /usr/bin /bin
-
-    # XDG Base directories
-    set -gx XDG_CONFIG_HOME $HOME/.config
-    set -gx XDG_DATA_HOME $HOME/.local/share
-    if not set -q $XDG_DATA_DIRS
-    	set -gx --path XDG_DATA_DIRS /usr/local/share /usr/share    
-    end
-    ## Core env variables
-    set -gx EDITOR nvim
-    set -Ux GTK_THEME "Catppuccin-Dark"
-    set -gx LANG en_US.UTF-8
-    
-    # CUDA
-    set -gx --path LD_LIBRARY_PATH $LD_LIBRARY_PATH /opt/cuda/lib64
-
-    # exa
-    alias exa="exa --time-style=long-iso"
-    alias ls="exa"
+    # eza
+    alias eza="eza --time-style=long-iso"
+    alias ls="eza"
     alias la="ls --long --all --header --icons"
     alias lg="ls --long --all --header --icons --git"
     alias less="less -R"
@@ -28,29 +19,22 @@ if status is-interactive
     #fd
     alias fd="fd -HI"
 
-    # fzf
-    set -Ux FZF_DEFAULT_OPTS "\
+    # LS_COLORS : Catppuccin Mocha, used by eza, fd and ls
+    if command -q vivid
+        set -gx LS_COLORS (vivid generate catppuccin-mocha)
+    end
+
+    # fzf : Catppuccin Mocha theme
+    set -gx FZF_DEFAULT_OPTS "\
     --height 20% --border \
-    --preview 'bat --style=numbers --color=always --line-range :500 {}' \
-    --color=bg+:#363a4f,bg:#24273a,spinner:#f4dbd6,hl:#ed8796 \
-    --color=fg:#cad3f5,header:#ed8796,info:#c6a0f6,pointer:#f4dbd6 \
-    --color=marker:#f4dbd6,fg+:#cad3f5,prompt:#c6a0f6,hl+:#ed8796"
+    --color=bg+:#313244,bg:#1E1E2E,spinner:#F5E0DC,hl:#F38BA8 \
+    --color=fg:#CDD6F4,header:#F38BA8,info:#CBA6F7,pointer:#F5E0DC \
+    --color=marker:#B4BEFE,fg+:#CDD6F4,prompt:#CBA6F7,hl+:#F38BA8 \
+    --color=selected-bg:#45475A \
+    --color=border:#6C7086,label:#CDD6F4"
 
-    # Java
-    set -gx JDK_HOME /usr/lib/jvm/default/
-    set -gx JAVA_HOME /usr/lib/jvm/default/
-
-    # GPG agent
-    set -x GPG_TTY (tty)
-    set -x SSH_AUTH_SOCK (gpgconf --list-dirs agent-ssh-socket)
-    gpgconf --launch gpg-agent
-
-    # Perl
-    fish_add_path -a /usr/bin/site_perl /usr/bin/vendor_perl /usr/bin/core_perl
-
-    #Pyenv
-    set -Ux PYENV_ROOT $HOME/.pyenv
-    pyenv init - | source
+    # fzf.fish : bind directory search to Ctrl+T, keep the other defaults
+    fzf_configure_bindings --directory=\ct
 
     #Starship.rs
     starship init fish | source

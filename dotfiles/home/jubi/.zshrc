@@ -1,17 +1,9 @@
-export GPG_TTY=$(tty)
-
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 ###################################################################################################
 # ZSH basic configuration
+#
+# Zsh is only kept as a POSIX-ish fallback, for the rare cases where Fish does not
+# fit. It is deliberately plugin-free : Fish is the real shell, see config.fish.
 ###################################################################################################
-#Poetry completion
-fpath+=~/.zfunc # contains a completion files
 
 #Autocompletion
 zstyle ':completion:*' menu yes select
@@ -33,52 +25,34 @@ SAVEHIST=$HISTSIZE
 setopt appendhistory
 setopt share_history        #share history between multiple instances of zsh
 
+###################################################################################################
+# Command line tools
+###################################################################################################
+
 #aliases
-alias exa="exa --time-style=long-iso"
-alias ls="exa"
+alias eza="eza --time-style=long-iso"
+alias ls="eza"
 alias la="ls --long --all --header --icons"
 alias lg="ls --long --all --header --icons --git"
 alias less="less -R"
 alias fd="fd -HI"
 
-###################################################################################################
-# ZSH Plugins
-###################################################################################################
+# LS_COLORS : Catppuccin Mocha, used by eza, fd and ls
+if command -v vivid >/dev/null; then
+    export LS_COLORS="$(vivid generate catppuccin-mocha)"
+fi
 
-### Plugins installed via pacman / paru ###
+# fzf : Catppuccin Mocha theme
+export FZF_DEFAULT_OPTS="--height 20% --border \
+    --color=bg+:#313244,bg:#1E1E2E,spinner:#F5E0DC,hl:#F38BA8 \
+    --color=fg:#CDD6F4,header:#F38BA8,info:#CBA6F7,pointer:#F5E0DC \
+    --color=marker:#B4BEFE,fg+:#CDD6F4,prompt:#CBA6F7,hl+:#F38BA8 \
+    --color=selected-bg:#45475A \
+    --color=border:#6C7086,label:#CDD6F4"
 
-#Enable syntax highlighting
-source ~/.zsh/catppuccin_mocha-zsh-syntax-highlighting.zsh
-source /usr/share/zsh/plugins/fast-syntax-highlighting/fast-syntax-highlighting.plugin.zsh
-
-#Enable Fish-like auto-suggestions
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh 
-
-#fzf
+#fzf key bindings, shipped by the fzf package itself (not a plugin)
 source /usr/share/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
 
-#Powerlevel10K
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-### Plugins manually installed ###
-source ~/.local/share/zsh-poetry/poetry.zsh
-
-###################################################################################################
-# Tools config
-###################################################################################################
-
-#kitty config
-kitty + complete setup zsh | source /dev/stdin
-
-
-export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-gpgconf --launch gpg-agent
-
-# Refresh gpg-agent tty in case user switches into an X session
-gpg-connect-agent updatestartuptty /bye >/dev/null
-
-#Pyenv
-eval "$(pyenv init -)"
+#Starship.rs
+eval "$(starship init zsh)"

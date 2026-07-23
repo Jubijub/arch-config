@@ -1,0 +1,8 @@
+# Stable, colon-free DRM card symlinks for AQ_DRM_DEVICES (Hyprland/Aquamarine).
+# /dev/dri/card* numbers can change across boots/driver updates, and the
+# /dev/dri/by-path names contain colons (the AQ_DRM_DEVICES separator), so we
+# create fixed symlinks keyed on PCI address instead.
+#   Intel Arrow Lake iGPU  -> 0000:00:02.0 -> /dev/dri/intel-igpu
+#   NVIDIA RTX 5080 Mobile -> 0000:02:00.0 -> /dev/dri/nvidia-dgpu
+KERNEL=="card*", KERNELS=="0000:00:02.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/intel-igpu"
+KERNEL=="card*", KERNELS=="0000:02:00.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/nvidia-dgpu"

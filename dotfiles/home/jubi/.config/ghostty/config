@@ -1,0 +1,3 @@
+font-family = "CaskaydiaCove NF"
+theme = catppuccin-mocha
+keybind = shift+enter=text:\x1b\r
