@@ -39,3 +39,11 @@ pill_scale = 1.2
 [system.monitor]
 # This should be the default, setting it explicitely to be sure.
 gpu_poll_seconds = 0
+
+# Wallpaper. The image files are deployed by chezmoi to ~/.local/share/wallpapers/.
+# NOTE: the GUI-managed ~/.local/state/noctalia/settings.toml wins on conflict, so
+# this only seeds a machine that has not picked a wallpaper in the GUI yet. On an
+# existing machine, set it with the Noctalia wallpaper picker (or clear the
+# [wallpaper.*] entries in settings.toml first).
+[wallpaper.default]
+path = "{{ .chezmoi.homeDir }}/.local/share/wallpapers/beyond_the_clouds_v01.png"

@@ -1,12 +1,6 @@
 # Files in the chezmoi source that are NOT targets under $HOME.
 # system/ is installed into /etc by .chezmoiscripts/run_onchange_install-system-files.sh
-# (chezmoi can't manage files outside $HOME).
+# (chezmoi can't manage files outside $HOME); README is repo documentation.
+# (Wallpapers under dot_local/share/wallpapers/ ARE deployed.)
 system
-
-# Repo docs: the dotfiles README and its illustration images. The wallpapers under
-# dot_local/share/wallpapers/ are NOT ignored -- they ARE deployed to ~/.local/share/wallpapers.
 README.asciidoc
-bar-wallpaper.png
-bat_btm_neofetch.png
-overview.png
-vscode-git-chrome.png
