@@ -12,8 +12,8 @@ if status is-interactive
     # eza
     alias eza="eza --time-style=long-iso"
     alias ls="eza"
-    alias la="ls --long --all --header --icons"
-    alias lg="ls --long --all --header --icons --git"
+    alias la="ls --long --all --header --icons auto"
+    alias lg="ls --long --all --header --icons auto --git"
     alias less="less -R"
 
     #fd
