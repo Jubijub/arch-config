@@ -48,3 +48,9 @@ gpu_poll_seconds = 0
 # [wallpaper.*] entries in settings.toml first).
 [wallpaper.default]
 path = "{{ .chezmoi.homeDir }}/Pictures/Wallpapers/beyond_the_clouds_v01.png"
+
+# Auto-rotate the wallpaper (cycles through ~/Pictures/Wallpapers). Enabled in the
+# Noctalia GUI; tracked here so a fresh machine gets it too. Interval / mode use
+# Noctalia's defaults (set them in the GUI if you want to pin them).
+[wallpaper.automation]
+enabled = true
