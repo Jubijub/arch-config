@@ -1,0 +1,18 @@
+require("telescope").setup({
+    defaults = {
+        preview = {
+            treesitter = false,
+        },
+    },
+})
+
+-- Load the compiled fzf-native sorter (built by the PackChanged hook).
+pcall(require("telescope").load_extension, "fzf")
+
+local builtin = require("telescope.builtin")
+vim.keymap.set("n", "<leader>pf", builtin.find_files, {})
+vim.keymap.set("n", "<leader>pg", builtin.git_files, {})
+vim.keymap.set("n", "<leader>ps", builtin.live_grep, {})
+vim.keymap.set("n", "<leader>pb", builtin.buffers, {})
+vim.keymap.set("n", "<leader>pd", builtin.lsp_document_symbols, {})
+vim.keymap.set("n", "<leader>pr", builtin.lsp_references, {})

@@ -15,17 +15,15 @@ end
 
 local sign = vim.fn.sign_define
 
--- Insert language specific configuration here
-
--- These are to override the default highlight groups for catppuccin (see https://github.com/catppuccin/nvim/#special-integrations)
+-- Override the default highlight groups for catppuccin
+-- (see https://github.com/catppuccin/nvim/#special-integrations)
 sign("DapBreakpoint", { text = "●", texthl = "DapBreakpoint", linehl = "", numhl = "" })
 sign("DapBreakpointCondition", { text = "●", texthl = "DapBreakpointCondition", linehl = "", numhl = "" })
 sign("DapLogPoint", { text = "◆", texthl = "DapLogPoint", linehl = "", numhl = "" })
 
-
-vim.keymap.set("n", "<F9>", ':DapToggleBreakpoint<CR>')
-vim.keymap.set("n", "<s-F5>", ':DapTerminate<CR>')
-vim.keymap.set("n", "<F5>", ':DapContinue<CR>')
-vim.keymap.set("n", "<F10>", ':DapStepOver<CR>')
-vim.keymap.set("n", "<F11>", ':DapStepInto<CR>')
-vim.keymap.set("n", "<s-F11>", ':DapStepOut<CR>')
+vim.keymap.set("n", "<F9>", ":DapToggleBreakpoint<CR>")
+vim.keymap.set("n", "<s-F5>", ":DapTerminate<CR>")
+vim.keymap.set("n", "<F5>", ":DapContinue<CR>")
+vim.keymap.set("n", "<F10>", ":DapStepOver<CR>")
+vim.keymap.set("n", "<F11>", ":DapStepInto<CR>")
+vim.keymap.set("n", "<s-F11>", ":DapStepOut<CR>")

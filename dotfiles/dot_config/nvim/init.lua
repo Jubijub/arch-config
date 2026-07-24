@@ -1,1 +1,3 @@
-require("jubi")
+require("options")
+require("keymaps")
+require("plugins")
