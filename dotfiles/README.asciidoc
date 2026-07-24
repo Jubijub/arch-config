@@ -69,7 +69,7 @@ chezmoi section of the wiki] for the bootstrap.
 * `dot_config/nvim/` : Neovim config.
 * `dot_config/pipewire/` : PipeWire tweaks.
 * `dot_config/gtk-3.0/bookmarks` : Nautilus sidebar bookmarks.
-* `dot_local/share/wallpapers/` : wallpapers.
+* `Pictures/Wallpapers/` : wallpapers (Noctalia's default wallpaper folder).
 * `system/etc/` : `/etc` drop-ins (locale, resolvconf, reflector, pacman hooks, and
   the Legion-only `90-hypr-gpu.rules`), installed by the run-script.
 
