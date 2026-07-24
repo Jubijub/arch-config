@@ -39,3 +39,6 @@ if status is-interactive
     #Starship.rs
     starship init fish | source
 end
+
+# uv
+fish_add_path "/home/jubi/.local/share/../bin"
