@@ -38,6 +38,15 @@ vim.pack.add({
     { src = "https://github.com/stevearc/conform.nvim" },
 })
 
+-- Mason only on non-Arch systems (Windows, Debian). On Arch the servers come
+-- from pacman/uv, so Mason and its plugins are not even installed.
+if not require("platform").is_arch then
+    vim.pack.add({
+        { src = "https://github.com/mason-org/mason.nvim" },
+        { src = "https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim" },
+    })
+end
+
 -- Build steps. vim.pack fires PackChanged on install/update/delete.
 vim.api.nvim_create_autocmd("PackChanged", {
     callback = function(ev)

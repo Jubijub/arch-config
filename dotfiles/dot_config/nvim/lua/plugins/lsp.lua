@@ -1,7 +1,16 @@
--- LSP without mason. Servers are installed on the system (see wiki 09):
---   lua-language-server, ruff, ty
--- nvim-lspconfig ships the base configs (cmd / filetypes / root_markers); we
--- override a few fields and turn servers on with the built-in vim.lsp API.
+-- LSP servers: lua_ls, ruff, ty.
+--   * On Arch they come from the system (pacman: lua-language-server, ruff;
+--     `uv tool install ty`) -- see wiki 09.
+--   * On other systems (Windows, Debian) Mason installs lua-language-server and
+--     ruff; ty still comes from uv (it is not in the Mason registry).
+-- Either way nvim-lspconfig supplies the base config and we enable the servers
+-- with the built-in vim.lsp API.
+if not require("platform").is_arch then
+    require("mason").setup()
+    require("mason-tool-installer").setup({
+        ensure_installed = { "lua-language-server", "ruff" },
+    })
+end
 
 -- Completion capabilities advertised by blink.cmp, for every server.
 vim.lsp.config("*", {
