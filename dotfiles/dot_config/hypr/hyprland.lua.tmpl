@@ -16,12 +16,12 @@ hl.monitor({
     scale    = "1",
 })
 {{- else -}}
--- Workstation (takemyheataway): single 4K display on the RTX 5090.
--- `mode = "preferred"` uses the monitor's preferred mode; pin the exact refresh
--- once `hyprctl monitors` reports it, e.g. mode = "3840x2160@144".
+-- Workstation (takemyheataway): single 4K@240 display (ASUS PG32UCDM) on the
+-- RTX 5090. NOTE: pin the refresh explicitly -- the EDID "preferred" mode is only
+-- 60Hz, so `mode = "preferred"` silently ran the 240Hz panel at 60Hz.
 hl.monitor({
     output   = "DP-5",
-    mode     = "preferred",
+    mode     = "3840x2160@240",
     position = "0x0",
     scale    = "1",
 })

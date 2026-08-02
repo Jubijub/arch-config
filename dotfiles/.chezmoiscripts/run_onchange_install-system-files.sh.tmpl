@@ -31,6 +31,15 @@ install_file "etc/xdg/reflector/reflector.conf"
 install_file "etc/pacman.d/hooks/mirrorupgrade.hook"
 install_file "etc/pacman.d/hooks/nvidia.hook"
 install_file "etc/pacman.d/hooks/systemd-boot.hook"
+# nvidia suspend/resume: preserve VRAM allocations across sleep. Baked into the
+# initramfs, so a change needs `sudo mkinitcpio -P` + reboot to take effect
+# (on a fresh install this file is laid down before the nvidia section's build).
+install_file "etc/modprobe.d/nvidia.conf"
+# hand resolv.conf management to resolvconf (Cloudflare DNS setup).
+install_file "etc/NetworkManager/conf.d/rc-manager.conf"
+# noctalia-greeter: altgr-intl keyboard + Catppuccin appearance (declarative;
+# greetd empties the env, so the layout must live here, not in a greetd env drop-in).
+install_file "var/lib/noctalia-greeter/greeter.toml"
 
 {{ if eq .machine "laptop" -}}
 # --- laptop: stable Intel iGPU / NVIDIA dGPU DRM symlinks for AQ_DRM_DEVICES ---
@@ -53,6 +62,9 @@ echo "Done."
 # mirrorupgrade.hook  {{ include "system/etc/pacman.d/hooks/mirrorupgrade.hook" | sha256sum }}
 # nvidia.hook         {{ include "system/etc/pacman.d/hooks/nvidia.hook" | sha256sum }}
 # systemd-boot.hook   {{ include "system/etc/pacman.d/hooks/systemd-boot.hook" | sha256sum }}
+# nvidia.conf         {{ include "system/etc/modprobe.d/nvidia.conf" | sha256sum }}
+# rc-manager.conf     {{ include "system/etc/NetworkManager/conf.d/rc-manager.conf" | sha256sum }}
+# greeter.toml        {{ include "system/var/lib/noctalia-greeter/greeter.toml" | sha256sum }}
 {{ if eq .machine "laptop" -}}
 # 90-hypr-gpu.rules   {{ include "system/etc/udev/rules.d/90-hypr-gpu.rules" | sha256sum }}
 {{- else -}}
