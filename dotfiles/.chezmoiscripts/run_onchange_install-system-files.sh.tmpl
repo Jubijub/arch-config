@@ -33,8 +33,13 @@ install_file "etc/pacman.d/hooks/nvidia.hook"
 install_file "etc/pacman.d/hooks/systemd-boot.hook"
 
 {{ if eq .machine "laptop" -}}
-# --- laptop only: stable Intel iGPU / NVIDIA dGPU DRM symlinks for AQ_DRM_DEVICES ---
+# --- laptop: stable Intel iGPU / NVIDIA dGPU DRM symlinks for AQ_DRM_DEVICES ---
 install_file "etc/udev/rules.d/90-hypr-gpu.rules"
+sudo udevadm control --reload
+sudo udevadm trigger
+{{- else -}}
+# --- workstation: stable NVIDIA dGPU DRM symlink for AQ_DRM_DEVICES ---
+install_file "etc/udev/rules.d/90-hypr-gpu-workstation.rules"
 sudo udevadm control --reload
 sudo udevadm trigger
 {{- end }}
@@ -50,4 +55,6 @@ echo "Done."
 # systemd-boot.hook   {{ include "system/etc/pacman.d/hooks/systemd-boot.hook" | sha256sum }}
 {{ if eq .machine "laptop" -}}
 # 90-hypr-gpu.rules   {{ include "system/etc/udev/rules.d/90-hypr-gpu.rules" | sha256sum }}
+{{- else -}}
+# 90-hypr-gpu-workstation.rules   {{ include "system/etc/udev/rules.d/90-hypr-gpu-workstation.rules" | sha256sum }}
 {{- end }}

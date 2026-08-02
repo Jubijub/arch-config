@@ -16,10 +16,15 @@ hl.monitor({
     scale    = "1",
 })
 {{- else -}}
--- TODO(workstation): define monitors for takemyheataway. Fill in real outputs,
--- modes and positions when chezmoi first runs on the workstation, e.g.:
---   hl.monitor({ output = "DP-2", mode = "3840x2160@144", position = "0x0",    scale = "1" })
---   hl.monitor({ output = "DP-4", mode = "3440x1440@60",  position = "3840x0", scale = "1" })
+-- Workstation (takemyheataway): single 4K display on the RTX 5090.
+-- `mode = "preferred"` uses the monitor's preferred mode; pin the exact refresh
+-- once `hyprctl monitors` reports it, e.g. mode = "3840x2160@144".
+hl.monitor({
+    output   = "DP-5",
+    mode     = "preferred",
+    position = "0x0",
+    scale    = "1",
+})
 {{- end }}
 
 
@@ -93,10 +98,15 @@ hl.env("AQ_DRM_DEVICES", "/dev/dri/intel-igpu")
 -- if you ever need an EGL app on NVIDIA, override this var for that app.
 hl.env("__EGL_VENDOR_LIBRARY_FILENAMES", "/usr/share/glvnd/egl_vendor.d/50_mesa.json")
 {{- else -}}
--- TODO(workstation): takemyheataway is a single-GPU desktop (RTX 5090, no Intel
--- iGPU), so the hybrid AQ_DRM_DEVICES / EGL-vendor restrictions above do NOT
--- apply. Leave the dGPU as the only card; add any workstation-specific GPU env
--- here if needed.
+-- Workstation (takemyheataway) has TWO GPUs: the RTX 5090 (dGPU) and the AMD
+-- Granite Ridge iGPU. The monitor (DP-5) is wired to the RTX 5090, so force
+-- Hyprland/Aquamarine to use the NVIDIA card as the primary scanout GPU --
+-- otherwise the primary-GPU pick between two DRM devices is not deterministic,
+-- and the amdgpu can't drive DP-5 anyway. `/dev/dri/nvidia-dgpu` is a stable
+-- udev symlink -> the RTX 5090 card node (see the workstation rule in
+-- system/etc/udev/rules.d/, installed by the system-files run-script). Takes
+-- effect on a full Hyprland restart (logout/login), NOT on `hyprctl reload`.
+hl.env("AQ_DRM_DEVICES", "/dev/dri/nvidia-dgpu")
 {{- end }}
 
 
@@ -303,7 +313,7 @@ hl.device({
 {{ if eq .machine "laptop" -}}
 local mainMonitor = "eDP-2"
 {{- else -}}
-local mainMonitor = "DP-2" -- TODO(workstation): set to the real primary output
+local mainMonitor = "DP-5" -- workstation: the RTX 5090's 4K output
 {{- end }}
 
 local termWorkspace, termIcon = 1, ""

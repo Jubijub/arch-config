@@ -1,0 +1,10 @@
+# Stable, colon-free DRM card symlink for AQ_DRM_DEVICES (Hyprland/Aquamarine).
+# /dev/dri/card* numbers can change across boots/driver updates (this box has two
+# GPUs, so the ordering is not fixed), and the /dev/dri/by-path names contain
+# colons (the AQ_DRM_DEVICES separator), so we create a fixed symlink keyed on the
+# PCI address instead.
+#   NVIDIA RTX 5090 -> 0000:01:00.0 -> /dev/dri/nvidia-dgpu
+# The monitor (DP-5) is wired to the RTX 5090, so hyprland.lua pins
+# AQ_DRM_DEVICES to this symlink to force the NVIDIA card as the primary scanout
+# GPU (the AMD Granite Ridge iGPU can't drive DP-5).
+KERNEL=="card*", KERNELS=="0000:01:00.0", SUBSYSTEM=="drm", SUBSYSTEMS=="pci", SYMLINK+="dri/nvidia-dgpu"
