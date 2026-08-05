@@ -15,6 +15,7 @@
 set -euo pipefail
 
 SRC="{{ .chezmoi.sourceDir }}/system"
+WALLPAPERS="{{ .chezmoi.sourceDir }}/Pictures/Wallpapers"
 
 install_file() {
     # $1 = path under system/ ; installed to the mirrored absolute path (root:root, 0644)
@@ -41,6 +42,18 @@ install_file "etc/NetworkManager/conf.d/rc-manager.conf"
 # greetd empties the env, so the layout must live here, not in a greetd env drop-in).
 install_file "var/lib/noctalia-greeter/greeter.toml"
 
+# Wallpapers, a second time, into a world-readable system path. They are already
+# deployed to ~/Pictures/Wallpapers/ for the shell (that is the folder noctalia's
+# wallpaper picker and its rotation use), but the greeter runs as the unprivileged
+# greetd session user and cannot read $HOME -- so the same set is mirrored here and
+# greeter.toml's [appearance.wallpaper] points at one of them.
+echo "Installing wallpapers into /usr/share/backgrounds ..."
+for wp in "$WALLPAPERS"/*; do
+    [ -f "$wp" ] || continue
+    sudo install -Dm644 "$wp" "/usr/share/backgrounds/$(basename "$wp")"
+    echo "  installed /usr/share/backgrounds/$(basename "$wp")"
+done
+
 {{ if eq .machine "laptop" -}}
 # --- laptop: stable Intel iGPU / NVIDIA dGPU DRM symlinks for AQ_DRM_DEVICES ---
 install_file "etc/udev/rules.d/90-hypr-gpu.rules"
@@ -65,6 +78,11 @@ echo "Done."
 # nvidia.conf         {{ include "system/etc/modprobe.d/nvidia.conf" | sha256sum }}
 # rc-manager.conf     {{ include "system/etc/NetworkManager/conf.d/rc-manager.conf" | sha256sum }}
 # greeter.toml        {{ include "system/var/lib/noctalia-greeter/greeter.toml" | sha256sum }}
+# wallpapers, globbed -- adding or replacing an image in Pictures/Wallpapers/ makes
+# this script re-run and mirror it into /usr/share/backgrounds/:
+{{ range (glob (joinPath .chezmoi.sourceDir "Pictures/Wallpapers/*")) -}}
+#   {{ base . }}  {{ include . | sha256sum }}
+{{ end -}}
 {{ if eq .machine "laptop" -}}
 # 90-hypr-gpu.rules   {{ include "system/etc/udev/rules.d/90-hypr-gpu.rules" | sha256sum }}
 {{- else -}}

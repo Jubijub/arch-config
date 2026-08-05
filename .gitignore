@@ -103,3 +103,11 @@ venv.bak/
 #VScode
 .vscode
 .claude
+
+# The Python boilerplate above ignores bare `var/`, `lib/` and `share/python-wheels/`,
+# which silently swallowed the chezmoi-managed system tree at
+# dotfiles/system/var/lib/noctalia-greeter/ -- the greeter.toml was invisible to git
+# and never reached the other machines. Re-include the managed system files.
+!dotfiles/system/var/
+!dotfiles/system/var/lib/
+!dotfiles/system/var/lib/**

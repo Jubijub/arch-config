@@ -7,22 +7,27 @@
 # A bar named "default" is spawned on every connected monitor. Widgets are placed
 # in three lanes: start (left), center, end (right). A bare name uses that widget
 # type with default settings; to customise one, add a matching [widget.<name>].
-#
-# Note: no "sysmon" widget here on purpose. The system-monitor widget is what
-# starts noctalia's SystemMonitorService, which on this hybrid laptop probes the
-# NVIDIA dGPU via NVML and keeps it awake. Leaving it out means the dGPU stays
-# suspended (D3cold) for battery. Add a sysmon widget back if you ever want it.
+# A [widget.<name>] that declares an explicit `type` is a *named instance*, which
+# is how several widgets of the same type coexist -- see the sysmon block below.
 [bar.default]
 position = "top"
 
-start  = ["launcher", "workspaces"]
 center = ["clock"]
 {{ if eq .machine "laptop" -}}
+# laptop: no "sysmon" widget here on purpose. The system-monitor widget is what
+# starts noctalia's SystemMonitorService, which on this hybrid laptop probes the
+# NVIDIA dGPU via NVML and keeps it awake. Leaving it out means the dGPU stays
+# suspended (D3cold) for battery. [system.monitor] below pins gpu_poll_seconds = 0
+# as a second line of defence.
+start  = ["launcher", "workspaces"]
 end    = ["tray", "clipboard", "network", "bluetooth", "volume", "brightness", "battery", "control-center", "notifications", "session"]
 {{- else -}}
-# workstation (takemyheataway): no laptop panel backlight and no battery, so the
-# "brightness" and "battery" widgets are dropped from the end lane.
-end    = ["tray", "clipboard", "network", "bluetooth", "volume", "control-center", "notifications", "session"]
+# workstation (takemyheataway): mains-powered, so the battery reason to omit sysmon
+# does not apply -- the stats block leads the end lane, ahead of tray/indicators/
+# session. No laptop panel backlight and no battery here, so "brightness" and
+# "battery" are dropped.
+start  = ["launcher", "workspaces"]
+end    = ["sysmon-cpu", "sysmon-cpu-temp", "sysmon-ram", "sysmon-gpu", "sysmon-gpu-temp", "sysmon-disk", "sysmon-net-rx", "sysmon-net-tx", "tray", "clipboard", "network", "bluetooth", "volume", "control-center", "notifications", "session"]
 {{- end }}
 
 # The workspaces widget can only render a workspace's `id` or its `name` -- there
@@ -35,10 +40,73 @@ display         = "name"
 max_label_chars = 2
 scale      = 1.4
 pill_scale = 1.2
+{{ if ne .machine "laptop" }}
+# ── System monitor widgets (workstation only) ─────────────────────────────────
+# Each of these is a named `sysmon` instance showing exactly one `stat`; the names
+# are referenced from bar.default.end above. Valid stats: cpu_usage, cpu_temp,
+# ram_pct, swap_pct, gpu_usage, gpu_temp, gpu_vram, disk_pct, net_rx, net_tx.
+#
+# `display` is gauge (default) | graph | text. The gauge draws a 0-100% ring, which
+# is right for the usage percentages but meaningless for temperatures and network
+# throughput -- those use "text" and render as glyph + value only.
+#
+# Check any edit here with `noctalia config validate ~/.config/noctalia/config.toml`:
+# unknown keys are only WARNs, so a typo silently does nothing at runtime.
+[widget.sysmon-cpu]
+type = "sysmon"
+stat = "cpu_usage"
 
+[widget.sysmon-cpu-temp]
+type          = "sysmon"
+stat          = "cpu_temp"
+display       = "text"
+
+[widget.sysmon-ram]
+type = "sysmon"
+stat = "ram_pct"
+
+# gpu_usage / gpu_temp only report anything if [system.monitor] gpu_poll_seconds
+# is non-zero -- see below.
+[widget.sysmon-gpu]
+type = "sysmon"
+stat = "gpu_usage"
+
+[widget.sysmon-gpu-temp]
+type          = "sysmon"
+stat          = "gpu_temp"
+display       = "text"
+
+[widget.sysmon-disk]
+type = "sysmon"
+stat = "disk_pct"
+path = "/"
+
+[widget.sysmon-net-rx]
+type                  = "sysmon"
+stat                  = "net_rx"
+display               = "text"
+network_speed_compact = true
+
+[widget.sysmon-net-tx]
+type                  = "sysmon"
+stat                  = "net_tx"
+display               = "text"
+network_speed_compact = true
+{{ end }}
 [system.monitor]
-# This should be the default, setting it explicitely to be sure.
+{{- if eq .machine "laptop" }}
+# laptop: 0 DISABLES GPU polling. This is NOT upstream's default (that is 5.0
+# seconds) -- it is deliberate, because any NVML probe wakes the hybrid laptop's
+# dGPU out of D3cold and costs battery. Together with the sysmon-free bar above,
+# nothing in noctalia touches the dGPU.
 gpu_poll_seconds = 0
+{{- else }}
+# workstation: the RTX 5090 is always on and drives the display anyway, so there is
+# nothing to keep asleep -- poll it, which is what feeds the sysmon-gpu and
+# sysmon-gpu-temp widgets. 5.0 is upstream's default, pinned explicitly so the
+# contrast with the laptop's 0 is visible.
+gpu_poll_seconds = 5.0
+{{- end }}
 
 # Wallpaper. The image files are deployed by chezmoi to ~/Pictures/Wallpapers/,
 # which is the folder Noctalia's wallpaper picker looks in by default.

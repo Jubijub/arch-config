@@ -1,0 +1,57 @@
+# noctalia-greeter declarative config (deployed by chezmoi's system-files run-script).
+#
+# This is the DECLARATIVE layer: the greeter never overwrites it -- it writes
+# mutable/synced data (from the shell's "Sync Now") to a separate sync.toml, and
+# keys here WIN over sync. So this file is the chezmoi source of truth and gives an
+# identical greeter on every machine with no GUI step.
+#
+# Keyboard: altgr-intl. greetd hands the greeter an EMPTY environment, so the
+# XKB_DEFAULT_* env vars (and any greetd.service.d drop-in) never reach it -- the
+# layout MUST be set here, which is precedence #1 for the greeter's compositor.
+[keyboard]
+layout  = "us"
+variant = "altgr-intl"
+numlock = true
+
+# Appearance: Catppuccin Mocha, declared inline so scheme="Synced" uses this palette
+# (a complete [appearance.palette] enables the "Synced" scheme) without depending on
+# the shell's Sync button. Matches the Catppuccin Mocha look of the rest of the system.
+[appearance]
+scheme     = "Synced"
+theme_mode = "dark"
+
+[appearance.palette]
+primary            = "#cba6f7"  # Mauve
+on_primary         = "#1e1e2e"  # Base
+secondary          = "#b4befe"  # Lavender
+on_secondary       = "#1e1e2e"  # Base
+tertiary           = "#a6e3a1"  # Green
+on_tertiary        = "#1e1e2e"  # Base
+error              = "#f38ba8"  # Red
+on_error           = "#1e1e2e"  # Base
+surface            = "#1e1e2e"  # Base
+on_surface         = "#cdd6f4"  # Text
+surface_variant    = "#313244"  # Surface0
+on_surface_variant = "#bac2de"  # Subtext1
+outline            = "#6c7086"  # Overlay0
+shadow             = "#11111b"  # Crust
+hover              = "#313244"  # Surface0
+on_hover           = "#cdd6f4"  # Text
+
+# Wallpaper. The greeter runs as the unprivileged greetd session user, which cannot
+# read ~/Pictures -- so the same image set the shell cycles through is ALSO installed
+# world-readable under /usr/share/backgrounds/ by the system-files run-script.
+#
+# This is a STATIC pick, deliberately. The greeter reads this file only when it
+# starts (boot / logout), so it cannot follow the shell's wallpaper rotation
+# ([wallpaper.automation] in ~/.config/noctalia/config.toml). Noctalia can push its
+# current wallpaper here instead -- Settings -> Security -> Noctalia Greeter ->
+# Sync Now, or `greeter_sync.auto_sync` -- but Sync writes sync.toml and the keys
+# below WIN over it, so this section has to be removed first for that to do
+# anything. Sync also needs a polkit admin auth on every push.
+#
+# fill_mode: center | crop | fit | stretch | repeat. fill_color (#RRGGBB) fills the
+# letterbox for the modes that don't cover the whole output.
+[appearance.wallpaper]
+path      = "/usr/share/backgrounds/beyond_the_clouds_v01.png"
+fill_mode = "crop"
