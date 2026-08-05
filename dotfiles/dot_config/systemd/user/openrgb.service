@@ -1,0 +1,33 @@
+[Unit]
+# aRGB lighting (workstation only: ASUS Aura + G.Skill DIMMs).
+#
+# Why a RESIDENT server rather than a one-shot `openrgb --profile ...`:
+# the ASUS Aura USB controller reverts to blank when no host keeps talking to it.
+# A one-shot CLI call opens the HID device, applies, exits -- and the lighting goes
+# dark a minute or two later. This is true in BOTH Direct and Static modes, so it is
+# not a mode problem: something has to stay connected. `--server` does that.
+#
+# Why colours are set here rather than loaded from an .orp profile:
+# `openrgb --save-profile` refuses to save this configuration ("Wrong number of
+# colors specified for mode Static -- provide between 1 and 1 colors"), because the
+# Aura zone carries 120 per-LED colours while Static allows one. So the profile
+# route is unusable here and the colour is applied explicitly instead.
+Description=OpenRGB aRGB lighting (resident server + static colour)
+Documentation=https://openrgb.org
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/openrgb --server
+
+# Apply the colour once the server is accepting clients. Leading "-" so a failure
+# here never marks the whole unit failed -- the server staying up is what matters.
+# CC0000 = pure red, zero green/blue. Catppuccin's reds (#f38ba8 / #eba0ac) all
+# render pink through the diffusers; see the OpenRGB section in wiki 06.
+ExecStartPost=-/bin/sh -c 'sleep 3; /usr/bin/openrgb -d "ProArt" -m static -c CC0000 -d 0 -m static -c CC0000 -d 1 -m static -c CC0000'
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

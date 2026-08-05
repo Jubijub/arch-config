@@ -62,6 +62,8 @@ sudo udevadm trigger
 {{- else -}}
 # --- workstation: stable NVIDIA dGPU DRM symlink for AQ_DRM_DEVICES ---
 install_file "etc/udev/rules.d/90-hypr-gpu-workstation.rules"
+# OpenRGB needs /dev/i2c-* to see the SMBus RGB devices (DDR5 DIMMs, GPU).
+install_file "etc/modules-load.d/i2c-dev.conf"
 sudo udevadm control --reload
 sudo udevadm trigger
 {{- end }}
@@ -87,4 +89,5 @@ echo "Done."
 # 90-hypr-gpu.rules   {{ include "system/etc/udev/rules.d/90-hypr-gpu.rules" | sha256sum }}
 {{- else -}}
 # 90-hypr-gpu-workstation.rules   {{ include "system/etc/udev/rules.d/90-hypr-gpu-workstation.rules" | sha256sum }}
+# i2c-dev.conf        {{ include "system/etc/modules-load.d/i2c-dev.conf" | sha256sum }}
 {{- end }}

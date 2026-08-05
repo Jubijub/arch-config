@@ -4,3 +4,11 @@
 # (Wallpapers under dot_local/share/wallpapers/ ARE deployed.)
 system
 README.asciidoc
+
+# OpenRGB aRGB state is workstation-only hardware (ASUS Aura + G.Skill DIMMs).
+# Ignored anywhere that is NOT the workstation, so a future third machine role
+# does not inherit lighting config for hardware it doesn't have.
+{{ if ne .machine "workstation" -}}
+.config/OpenRGB
+.config/systemd/user/openrgb.service
+{{ end -}}

@@ -40,7 +40,7 @@ display         = "name"
 max_label_chars = 2
 scale      = 1.4
 pill_scale = 1.2
-{{ if ne .machine "laptop" }}
+{{ if eq .machine "workstation" }}
 # ── System monitor widgets (workstation only) ─────────────────────────────────
 # Each of these is a named `sysmon` instance showing exactly one `stat`; the names
 # are referenced from bar.default.end above. Valid stats: cpu_usage, cpu_temp,
