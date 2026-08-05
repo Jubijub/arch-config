@@ -11,4 +11,5 @@ README.asciidoc
 {{ if ne .machine "workstation" -}}
 .config/OpenRGB
 .config/systemd/user/openrgb.service
+.local/bin/openrgb-apply
 {{ end -}}

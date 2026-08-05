@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+#
+# Apply the workstation's aRGB colour, once OpenRGB's server has actually finished
+# detecting hardware. Called from openrgb.service (ExecStartPost).
+#
+# IMPORTANT: run this with NO OpenRGB server running -- it is wired as the service's
+# ExecStartPre, i.e. before `openrgb --server` starts. A standalone `openrgb` does
+# its own detection and writes the hardware directly, which works. The same commands
+# issued as an SDK CLIENT against a running server repeatedly returned exit 0 while
+# the LEDs never changed, so colour must not be driven that way. Running this by hand
+# while the service is up will therefore appear to succeed and do nothing: stop the
+# service first (`systemctl --user stop openrgb`), or just restart it.
+#
+# Why a polling loop rather than `sleep N`:
+# `openrgb --server` enumerates asynchronously. Measured at boot, 3 seconds in it
+# had found only 2 of the 5 controllers and the ASUS Aura board was not among them,
+# so the colour command died with `Cannot find device "ProArt"` and the lighting was
+# left at whatever the controller happened to be holding. Because openrgb.service
+# marks ExecStartPost with a leading "-", that failure was invisible: the unit still
+# reported active, and the lighting only looked right because the Aura controller
+# retains its last colour across a warm reboot.
+#
+# Why the loop retries the REAL command instead of probing with --list-devices:
+# that probe is not equivalent. When the server is not yet accepting clients,
+# --list-devices silently falls back to its own LOCAL detection and happily reports
+# all 5 devices, while the apply goes to the server and fails. Checking one thing
+# and doing another raced every time.
+#
+# Why the two controller families use DIFFERENT modes -- this is the non-obvious bit:
+#   ASUS Aura (fans, waterblock, MORA)  -> static
+#       Direct blanks a minute or two after the last client disconnects.
+#   ENE DRAM (2x G.Skill Trident Z5)    -> direct
+#       Static turns these off outright; only Direct lights them.
+# Direct is safe for the DIMMs only because this runs under a RESIDENT server, which
+# is the same thing that stops the Aura chain from blanking.
+#
+# Device indices: the two DIMMs share the name "ENE DRAM", and a `-d "ENE DRAM"`
+# substring match hits both ambiguously and switches them off, so they must be
+# addressed by index. That is safe here because the board is the LAST of the five to
+# enumerate -- once the "$BOARD" apply below succeeds, 0 and 1 are the DIMMs.
+#
+# CC0000 = pure red, zero green/blue. Catppuccin's reds all render pink through the
+# diffusers; see the OpenRGB section in wiki 06.
+set -uo pipefail
+
+COLOR="CC0000"
+BOARD="ProArt"
+TRIES=30
+SLEEP=2
+
+apply_all() {
+    # Board first: it enumerates last, so its success gates everything else.
+    openrgb -d "$BOARD" -m static -c "$COLOR" >/dev/null 2>&1 || return 1
+    openrgb -d 0        -m direct -c "$COLOR" >/dev/null 2>&1 || return 1
+    openrgb -d 1        -m direct -c "$COLOR" >/dev/null 2>&1 || return 1
+}
+
+for _ in $(seq 1 "$TRIES"); do
+    if apply_all; then
+        exit 0
+    fi
+    sleep "$SLEEP"
+done
+
+echo "openrgb-apply: failed to apply after $((TRIES * SLEEP))s" >&2
+exit 1
