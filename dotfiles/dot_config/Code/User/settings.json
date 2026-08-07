@@ -1,6 +1,6 @@
 {
     "workbench.colorTheme": "Catppuccin Mocha",
     "python.defaultInterpreterPath": "/bin/python",
-    "editor.fontFamily": "'CaskaydiaCove NF', 'monospace', monospace",
+    "editor.fontFamily": "'Iosevka NF', 'monospace', monospace",
     "claudeCode.preferredLocation": "panel"
 }
