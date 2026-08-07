@@ -43,6 +43,10 @@
 # diffusers; see the OpenRGB section in wiki 06.
 set -uo pipefail
 
+# The PG32UCDM monitor (5 LEDs) is deliberately NOT managed here. Direct is its only
+# mode, so it blanks as soon as the standalone apply exits -- it would have to be set
+# after the server is up, i.e. as a client, which is the unreliable path. Not worth a
+# half-working step for a light that is barely visible.
 COLOR="CC0000"
 BOARD="ProArt"
 TRIES=30
