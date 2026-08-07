@@ -1,3 +1,9 @@
-font-family = "CaskaydiaCove NF"
+# Font. Name must match `ghostty +list-fonts` exactly. The package is
+# ttf-iosevkaterm-nerd; "Term" is Iosevka's narrower terminal cut, and the "Mono"
+# Nerd Font variant keeps icon glyphs to a single cell so they don't overflow.
+# Swap to "IosevkaTerm Nerd Font" for wider, more detailed icons.
+font-family = "IosevkaTerm Nerd Font Mono"
+# Ghostty's default is 12; 11 is one step down.
+font-size = 11
 theme = catppuccin-mocha
 keybind = shift+enter=text:\x1b\r

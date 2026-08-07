@@ -284,6 +284,13 @@ hl.config({
         kb_options = "",
         kb_rules   = "",
 
+{{- if eq .machine "workstation" }}
+        -- Keychron K0 Max (Bluetooth numpad, workstation only): without this its
+        -- keys emit the navigation layer (Home/End/arrows) instead of digits.
+        -- The greeter sets its own numlock in greeter.toml.
+        numlock_by_default = true,
+{{- end }}
+
         follow_mouse = 1,
 
         sensitivity = 0, -- -1.0 - 1.0, 0 means no modification.
