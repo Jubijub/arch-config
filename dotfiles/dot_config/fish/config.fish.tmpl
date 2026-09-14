@@ -1,10 +1,26 @@
+{{- $role := index .roles .machine -}}
 # XDG Base directories
 set -gx XDG_CONFIG_HOME $HOME/.config
 set -gx XDG_DATA_HOME $HOME/.local/share
 if not set -q XDG_DATA_DIRS
+{{- if eq $role.os "darwin" }}
+    set -gx --path XDG_DATA_DIRS /opt/homebrew/share /usr/local/share /usr/share
+{{- else }}
     set -gx --path XDG_DATA_DIRS /usr/local/share /usr/share
+{{- end }}
 end
 
+{{ if eq $role.os "darwin" -}}
+# Homebrew. This is load-bearing, not cosmetic: Apple ships OpenSSH built
+# without the libfido2 middleware, so `/usr/bin/ssh-keygen -t ed25519-sk` fails
+# with "unknown or unsupported key type". Putting /opt/homebrew/bin first is what
+# makes the FIDO2 Yubikey work for ssh and for git commit signing.
+# See the wiki, 08.SSH-FIDO2 "Put Homebrew first in the fish PATH".
+if test -x /opt/homebrew/bin/brew
+    /opt/homebrew/bin/brew shellenv | source
+end
+
+{{ end -}}
 ## Core env variables
 set -gx EDITOR nvim
 
@@ -41,4 +57,4 @@ if status is-interactive
 end
 
 # uv
-fish_add_path "/home/jubi/.local/share/../bin"
+fish_add_path $HOME/.local/bin

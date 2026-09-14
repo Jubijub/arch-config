@@ -1,3 +1,4 @@
+{{- $role := index .roles .machine -}}
 set-option -sa terminal-overrides ",xterm*:Tc"
 set -g mouse on
 
@@ -39,7 +40,14 @@ set -g @plugin 'christoomey/vim-tmux-navigator'
 set -g @plugin 'dreamsofcode-io/catppuccin-tmux'
 set -g @plugin 'tmux-plugins/tmux-yank'
 
+{{ if eq $role.os "darwin" -}}
+# TPM has no Homebrew formula, so it is a git clone kept up to date declaratively
+# by .chezmoiexternal.toml.tmpl. (On Arch it comes from the tmux-plugin-manager
+# package instead, at /usr/share/tmux-plugin-manager/tpm.)
+run '~/.tmux/plugins/tpm/tpm'
+{{- else -}}
 run '/usr/share/tmux-plugin-manager/tpm'
+{{- end }}
 
 # set vi-mode
 set-window-option -g mode-keys vi

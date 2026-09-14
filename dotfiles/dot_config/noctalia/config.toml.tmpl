@@ -1,3 +1,4 @@
+{{- $role := index .roles .machine -}}
 # Noctalia hand-written config (config layer).
 # Loads after built-in defaults, before the GUI-managed state layer
 # (~/.local/state/noctalia/settings.toml), which WINS on conflicts. So if you
@@ -13,7 +14,14 @@
 position = "top"
 
 center = ["clock"]
-{{ if eq .machine "laptop" -}}
+{{ if $role.sysmon -}}
+# workstation (takemyheataway): mains-powered, so the battery reason to omit sysmon
+# does not apply -- the stats block leads the end lane, ahead of tray/indicators/
+# session. No laptop panel backlight and no battery here, so "brightness" and
+# "battery" are dropped.
+start  = ["launcher", "workspaces"]
+end    = ["sysmon-cpu", "sysmon-cpu-temp", "sysmon-ram", "sysmon-gpu", "sysmon-gpu-temp", "sysmon-disk", "sysmon-net-rx", "sysmon-net-tx", "tray", "clipboard", "network", "bluetooth", "volume", "control-center", "notifications", "session"]
+{{- else -}}
 # laptop: no "sysmon" widget here on purpose. The system-monitor widget is what
 # starts noctalia's SystemMonitorService, which on this hybrid laptop probes the
 # NVIDIA dGPU via NVML and keeps it awake. Leaving it out means the dGPU stays
@@ -21,13 +29,6 @@ center = ["clock"]
 # as a second line of defence.
 start  = ["launcher", "workspaces"]
 end    = ["tray", "clipboard", "network", "bluetooth", "volume", "brightness", "battery", "control-center", "notifications", "session"]
-{{- else -}}
-# workstation (takemyheataway): mains-powered, so the battery reason to omit sysmon
-# does not apply -- the stats block leads the end lane, ahead of tray/indicators/
-# session. No laptop panel backlight and no battery here, so "brightness" and
-# "battery" are dropped.
-start  = ["launcher", "workspaces"]
-end    = ["sysmon-cpu", "sysmon-cpu-temp", "sysmon-ram", "sysmon-gpu", "sysmon-gpu-temp", "sysmon-disk", "sysmon-net-rx", "sysmon-net-tx", "tray", "clipboard", "network", "bluetooth", "volume", "control-center", "notifications", "session"]
 {{- end }}
 
 # The workspaces widget can only render a workspace's `id` or its `name` -- there
@@ -40,7 +41,7 @@ display         = "name"
 max_label_chars = 2
 scale      = 1.4
 pill_scale = 1.2
-{{ if eq .machine "workstation" }}
+{{ if $role.sysmon }}
 # ── System monitor widgets (workstation only) ─────────────────────────────────
 # Each of these is a named `sysmon` instance showing exactly one `stat`; the names
 # are referenced from bar.default.end above. Valid stats: cpu_usage, cpu_temp,
@@ -94,18 +95,18 @@ display               = "text"
 network_speed_compact = true
 {{ end }}
 [system.monitor]
-{{- if eq .machine "laptop" }}
-# laptop: 0 DISABLES GPU polling. This is NOT upstream's default (that is 5.0
-# seconds) -- it is deliberate, because any NVML probe wakes the hybrid laptop's
-# dGPU out of D3cold and costs battery. Together with the sysmon-free bar above,
-# nothing in noctalia touches the dGPU.
-gpu_poll_seconds = 0
-{{- else }}
+{{- if $role.sysmon }}
 # workstation: the RTX 5090 is always on and drives the display anyway, so there is
 # nothing to keep asleep -- poll it, which is what feeds the sysmon-gpu and
 # sysmon-gpu-temp widgets. 5.0 is upstream's default, pinned explicitly so the
 # contrast with the laptop's 0 is visible.
 gpu_poll_seconds = 5.0
+{{- else }}
+# laptop: 0 DISABLES GPU polling. This is NOT upstream's default (that is 5.0
+# seconds) -- it is deliberate, because any NVML probe wakes the hybrid laptop's
+# dGPU out of D3cold and costs battery. Together with the sysmon-free bar above,
+# nothing in noctalia touches the dGPU.
+gpu_poll_seconds = 0
 {{- end }}
 
 # Wallpaper. The image files are deployed by chezmoi to ~/Pictures/Wallpapers/,

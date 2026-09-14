@@ -1,0 +1,14 @@
+{{- $role := index .roles .machine -}}
+{{- if eq $role.os "darwin" }}
+# tmux Plugin Manager.
+#
+# On Arch this is the `tmux-plugin-manager` package (/usr/share/tmux-plugin-manager),
+# but Homebrew has no formula for it, so on macOS chezmoi keeps the git clone
+# itself. tmux.conf.tmpl points `run` at this path on darwin.
+#
+# refreshPeriod stops `chezmoi apply` from hitting the network on every run.
+[".tmux/plugins/tpm"]
+    type = "git-repo"
+    url = "https://github.com/tmux-plugins/tpm.git"
+    refreshPeriod = "168h"
+{{- end }}

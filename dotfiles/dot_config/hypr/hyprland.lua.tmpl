@@ -15,7 +15,7 @@ hl.monitor({
     position = "auto",
     scale    = "1",
 })
-{{- else -}}
+{{- else if eq .machine "workstation" -}}
 -- Workstation (takemyheataway): single 4K@240 display (ASUS PG32UCDM) on the
 -- RTX 5090. NOTE: pin the refresh explicitly -- the EDID "preferred" mode is only
 -- 60Hz, so `mode = "preferred"` silently ran the 240Hz panel at 60Hz.
@@ -25,6 +25,8 @@ hl.monitor({
     position = "0x0",
     scale    = "1",
 })
+{{- else -}}
+{{- fail (printf "hyprland.lua.tmpl: no monitor/GPU configuration defined for machine role %q" .machine) -}}
 {{- end }}
 
 
@@ -100,7 +102,7 @@ hl.env("AQ_DRM_DEVICES", "/dev/dri/intel-igpu")
 -- Games still reach NVIDIA via the Vulkan ICD / PRIME offload (this only affects EGL);
 -- if you ever need an EGL app on NVIDIA, override this var for that app.
 hl.env("__EGL_VENDOR_LIBRARY_FILENAMES", "/usr/share/glvnd/egl_vendor.d/50_mesa.json")
-{{- else -}}
+{{- else if eq .machine "workstation" -}}
 -- Workstation (takemyheataway) has TWO GPUs: the RTX 5090 (dGPU) and the AMD
 -- Granite Ridge iGPU. The monitor (DP-5) is wired to the RTX 5090, so force
 -- Hyprland/Aquamarine to use the NVIDIA card as the primary scanout GPU --
@@ -110,6 +112,8 @@ hl.env("__EGL_VENDOR_LIBRARY_FILENAMES", "/usr/share/glvnd/egl_vendor.d/50_mesa.
 -- system/etc/udev/rules.d/, installed by the system-files run-script). Takes
 -- effect on a full Hyprland restart (logout/login), NOT on `hyprctl reload`.
 hl.env("AQ_DRM_DEVICES", "/dev/dri/nvidia-dgpu")
+{{- else -}}
+{{- fail (printf "hyprland.lua.tmpl: no monitor/GPU configuration defined for machine role %q" .machine) -}}
 {{- end }}
 
 
@@ -322,8 +326,10 @@ hl.device({
 -- Monitor the persistent workspaces are pinned to (machine-specific).
 {{ if eq .machine "laptop" -}}
 local mainMonitor = "eDP-2"
-{{- else -}}
+{{- else if eq .machine "workstation" -}}
 local mainMonitor = "DP-5" -- workstation: the RTX 5090's 4K output
+{{- else -}}
+{{- fail (printf "hyprland.lua.tmpl: no monitor/GPU configuration defined for machine role %q" .machine) -}}
 {{- end }}
 
 local termWorkspace, termIcon = 1, ""
@@ -411,10 +417,12 @@ hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_S
 -- never changed. Check with `brightnessctl -l`.
 hl.bind("XF86MonBrightnessUp",  hl.dsp.exec_cmd("brightnessctl -d intel_backlight -e4 -n2 set 5%+"), { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessDown",hl.dsp.exec_cmd("brightnessctl -d intel_backlight -e4 -n2 set 5%-"), { locked = true, repeating = true })
-{{- else -}}
+{{- else if eq .machine "workstation" -}}
 -- TODO(workstation): no laptop panel backlight on takemyheataway. If you want
 -- the brightness keys to drive an external monitor, wire them to e.g. ddcutil
 -- here; otherwise leave them unbound.
+{{- else -}}
+{{- fail (printf "hyprland.lua.tmpl: no monitor/GPU configuration defined for machine role %q" .machine) -}}
 {{- end }}
 
 -- Requires playerctl

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+{{- $role := index .roles .machine }}
+{{- if ne $role.os "darwin" }}
+# Not a macOS machine -- packages come from pacman/yay instead.
+exit 0
+{{- else }}
+#
+# Installs the Brewfile package set. Runs before install-system-files (scripts
+# execute in name order, and "darwin-" sorts before "install-"), though that one
+# is a no-op on macOS anyway.
+#
+# run_onchange_: the Brewfile hash at the bottom makes this re-run whenever the
+# package list changes, and only then.
+#
+# Casks may prompt for the account password -- that is macOS gatekeeping the
+# /Applications write, not chezmoi.
+set -euo pipefail
+
+BREWFILE="{{ .chezmoi.sourceDir }}/Brewfile"
+
+if ! command -v brew >/dev/null 2>&1; then
+    echo "brew not found on PATH -- install Homebrew first (see wiki 12-MacOS)." >&2
+    exit 1
+fi
+
+echo "Installing Homebrew packages from $BREWFILE ..."
+brew bundle --file="$BREWFILE"
+echo "Done."
+
+# --- change detection (do not edit): Brewfile hash ---
+# Brewfile  {{ include "Brewfile" | sha256sum }}
+{{- end }}

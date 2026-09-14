@@ -1,6 +1,6 @@
 :experimental:
 
-# Linux config files (Arch + Hyprland)
+# Config files (Arch + Hyprland, and macOS)
 
 ## Introduction
 
@@ -10,6 +10,9 @@ fallback), my terminal (https://ghostty.org[ghostty]), and my Wayland compositor
 (https://hyprland.org[Hyprland]) with the https://github.com/noctalia-dev/noctalia-shell[Noctalia]
 bar/shell.
 
+It also covers a macOS machine, which shares the shell / terminal / editor layer
+and skips everything Linux-specific.
+
 The full step-by-step is in the
 https://github.com/Jubijub/arch-config/wiki[arch-config wiki].
 
@@ -18,26 +21,88 @@ Feel free to copy anything here, but use at your own risk.
 ## Deployment (chezmoi)
 
 These files are managed with https://www.chezmoi.io[chezmoi], which handles both
-deployment and the per-machine differences (workstation vs laptop). The source
-layout uses chezmoi's conventions (`dot_config/` -> `~/.config`, `*.tmpl` for
-templated files, `private_` for 0700 dirs). See
+deployment and the per-machine differences. The source layout uses chezmoi's
+conventions (`dot_config/` -> `~/.config`, `*.tmpl` for templated files,
+`private_` for 0700 dirs). See
 https://github.com/Jubijub/arch-config/wiki/5.Post-installation#deploy-dotfiles-with-chezmoi[the
-chezmoi section of the wiki] for the bootstrap.
+chezmoi section of the wiki] for the Arch bootstrap, and
+https://github.com/Jubijub/arch-config/wiki/12-MacOS[12-MacOS] for the macOS one.
 
-* `.chezmoi.toml.tmpl` asks once whether the machine is `workstation` or `laptop`
-  and stores the answer; no hostnames are hardcoded.
-* `hyprland.lua` and `noctalia/config.toml` are templates that branch on that role
-  (monitors, GPU, battery/backlight).
+### Machine roles
+
+`.chezmoi.toml.tmpl` asks once for a *role* and stores the answer; no hostnames
+are hardcoded anywhere. The role indexes the `roles` table in
+`.chezmoidata.yaml`, which is what the templates actually branch on:
+
+[cols="1,4"]
+|===
+|Role |Machine
+
+|`workstation` |Asus X870e / 9950X3D / RTX 5090, Arch + Hyprland
+|`laptop`      |Lenovo Legion Pro 7i Gen 10, Arch + Hyprland
+|`wsl`         |Arch on WSL2 (declared, not yet configured)
+|`macbook`     |MacBook "Neo", Apple Silicon, macOS
+|===
+
+*Add a machine by adding a row to `.chezmoidata.yaml`*, not by adding another
+`{{ if eq .machine "..." }}` branch. Templates branch on the capability flags
+(`os`, `arch`, `systemfiles`, `desktop`, `sysmon`, `rgb`), never on `.machine`
+directly, because an `{{ else }}` that means "workstation" silently hands a new
+machine the workstation's monitors, GPU and RGB config -- which is exactly the
+bug this table exists to prevent. Where a branch genuinely cannot be
+generalised, the final `{{ else }}` calls `fail` instead of falling through.
+
+`.chezmoiignore` validates the stored role on every apply, so a typo or a role
+whose declared `os` does not match the real one fails loudly rather than
+deploying the wrong tree.
+
+### Notable pieces
+
+* `hyprland.lua` and `noctalia/config.toml` branch on the role (monitors, GPU,
+  battery/backlight, system-monitor widgets). Both are ignored entirely where
+  `desktop` is false.
 * `system/` holds verbatim `/etc` drop-ins that chezmoi can't manage directly (it
   only touches `$HOME`); `.chezmoiscripts/run_onchange_install-system-files.sh.tmpl`
-  installs them with `sudo` on `chezmoi apply`.
+  installs them with `sudo` on `chezmoi apply`, and is a no-op where
+  `systemfiles` is false.
+* `Brewfile` + `run_onchange_darwin-brew-bundle.sh.tmpl` install the macOS
+  package set. The Arch equivalent is still the `pacman -S` commands in the wiki.
+* `vscode-extensions.txt` + `run_onchange_install-vscode-extensions.sh.tmpl`
+  install the VSCode extension set on *both* OSes (extensions are not files, so
+  chezmoi cannot manage them the way it manages `settings.json`).
+* VSCode's `settings.json` lives at a different path per OS, so the tree carries
+  both and ignores the wrong one; both render the shared
+  `.chezmoitemplates/vscode-settings.json`.
+
+### Testing a change
+
+Because `os` is a role field rather than `.chezmoi.os`, *any* machine's output
+can be rendered from *any* machine -- so a change can be checked against the
+other machines before touching them:
+
+[source,shell]
+----
+git worktree add /tmp/before HEAD
+printf '[data]\n machine = "workstation"\n skipRoleOsCheck = true\n' > /tmp/ws.toml
+diff <(chezmoi --config /tmp/ws.toml --source /tmp/before/dotfiles \
+         execute-template < /tmp/before/dotfiles/<file>) \
+     <(chezmoi --config /tmp/ws.toml --source $PWD \
+         execute-template < <file>)
+----
+
+`skipRoleOsCheck` exists only for this; never set it in a real
+`~/.config/chezmoi/chezmoi.toml`. Confirm on the machine itself afterwards with
+`chezmoi diff`, which should be empty for a refactor that is meant to change
+nothing.
 
 ## Tools
 
 ### Themes
 * Colors: https://github.com/catppuccin/catppuccin[Catppuccin Mocha]
-* Font: https://www.jetbrains.com/lp/mono/[JetBrains Mono] / CaskaydiaCove, with the
-  https://www.nerdfonts.com/[Nerd Fonts] patch
+* Font: https://typeof.net/Iosevka/[Iosevka] with the
+  https://www.nerdfonts.com/[Nerd Fonts] patch -- `Iosevka NF` for editors and
+  `IosevkaTerm Nerd Font Mono` (the Term cut) for terminals, deliberately two
+  different families.
 * GTK apps are forced dark via `gsettings ... color-scheme prefer-dark` (no theme
   engine -- full GTK theming was given up as too flaky).
 
@@ -66,12 +131,17 @@ chezmoi section of the wiki] for the bootstrap.
 * `dot_config/noctalia/config.toml.tmpl` : Noctalia bar (machine-templated).
 * `dot_config/ghostty/` : ghostty config + corrected Catppuccin Mocha theme.
 * `dot_config/{bat,btop,fish,flameshot,tmux}/`, `dot_config/starship.toml` : CLI tools.
+* `Library/Application Support/Code/User/` : VSCode settings on macOS (the
+  `dot_config/Code/` copy is the Linux one; only one is ever deployed).
 * `dot_config/nvim/` : Neovim config.
 * `dot_config/pipewire/` : PipeWire tweaks.
 * `dot_config/gtk-3.0/bookmarks` : Nautilus sidebar bookmarks.
 * `Pictures/Wallpapers/` : wallpapers (Noctalia's default wallpaper folder).
 * `system/etc/` : `/etc` drop-ins (locale, resolvconf, reflector, pacman hooks, and
   the Legion-only `90-hypr-gpu.rules`), installed by the run-script.
+* `.chezmoidata.yaml` : the machine roles table (see above).
+* `Brewfile`, `vscode-extensions.txt` : package / extension lists read by the
+  run-scripts. Not deployed to `$HOME`.
 
 ## Keybindings
 

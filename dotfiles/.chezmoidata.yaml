@@ -1,0 +1,61 @@
+# Machine roles and their capabilities.
+#
+# Templates MUST branch on these flags, never on `.machine` or `.chezmoi.os`
+# directly. Two reasons:
+#
+#   1. Adding a machine is then a matter of adding a row here, instead of
+#      hunting down every `{{ if eq .machine "laptop" }} ... {{ else }}` in the
+#      tree -- where the `else` silently meant "workstation" and any new role
+#      inherited the workstation's monitors, GPU and RGB config.
+#   2. `.chezmoi.os` is supplied by the runtime and cannot be overridden, so a
+#      template branching on it can only be rendered for the machine you are
+#      sitting at. Keeping `os` here means every role's output can be rendered
+#      and diffed from any machine (see README.asciidoc, "Testing a change").
+#
+# `os` is cross-checked against the real `.chezmoi.os` in .chezmoi.toml.tmpl,
+# so it cannot drift out of sync.
+#
+# Capabilities:
+#   os          -- "linux" or "darwin"; must match .chezmoi.os
+#   arch        -- Arch Linux (pacman/yay rather than brew)
+#   systemfiles -- bare-metal Arch: the /etc drop-ins in system/ are installed.
+#                  False on WSL (no greeter, no GPU udev rules, no reflector) and
+#                  on macOS (no /etc drop-ins, and BSD install(1) has no -D).
+#   desktop     -- Hyprland/Wayland session: hypr, noctalia, pipewire, flameshot, gtk
+#   sysmon      -- Noctalia system-monitor bar widgets (needs a dGPU worth polling)
+#   rgb         -- OpenRGB hardware (ASUS Aura + G.Skill DIMMs)
+roles:
+  # Asus Creator X870e + 9950X3D + RTX 5090, 4K@240 (takemyheataway)
+  workstation:
+    os: linux
+    arch: true
+    systemfiles: true
+    desktop: true
+    sysmon: true
+    rgb: true
+  # Lenovo Legion Pro 7i Gen 10, Intel iGPU + RTX 5080 Max-Q
+  laptop:
+    os: linux
+    arch: true
+    systemfiles: true
+    desktop: true
+    sysmon: false
+    rgb: false
+  # Arch on WSL2: no graphical session, no hardware of its own.
+  # Declared so that the `else` branches stop meaning "workstation"; no
+  # WSL-specific configuration is authored yet.
+  wsl:
+    os: linux
+    arch: true
+    systemfiles: false
+    desktop: false
+    sysmon: false
+    rgb: false
+  # MacBook "Neo", Apple Silicon. Homebrew instead of pacman, no Wayland.
+  macbook:
+    os: darwin
+    arch: false
+    systemfiles: false
+    desktop: false
+    sysmon: false
+    rgb: false

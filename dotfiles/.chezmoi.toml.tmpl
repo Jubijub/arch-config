@@ -3,12 +3,22 @@
 # Host identity is chosen ONCE, interactively, at `chezmoi init` time and stored
 # in the generated (untracked) config. It is NOT derived from the hostname, so
 # renaming a machine never breaks anything and no hostname strings are hardcoded
-# anywhere in the tracked tree. Every template branches on .machine, comparing it
-# to "workstation" or "laptop".
+# anywhere in the tracked tree.
 #
-# sourceDir lets the repo live outside $HOME. Re-run `chezmoi init` to change the
-# stored machine role.
-sourceDir = "/projects/config/arch-config/dotfiles"
+# The role name selected here indexes the `roles` table in .chezmoidata.yaml,
+# which is what the templates actually branch on. Valid roles are the keys of
+# that table -- add a row there to add a machine.
+#
+# The answer is NOT validated here: chezmoi renders this config template before
+# it reads the source state, so .chezmoidata.yaml is not available yet. The
+# check lives at the top of .chezmoiignore instead, which is rendered on every
+# apply -- so a typo surfaces on the `chezmoi diff` that follows `init`. Fix it
+# by re-running `chezmoi init`.
+#
+# sourceDir records whatever `chezmoi init --source=...` was given, so the repo
+# can live anywhere (/projects/config/arch-config on Arch,
+# ~/Projects/arch-config on macOS).
+sourceDir = {{ .chezmoi.sourceDir | quote }}
 
 [data]
-    machine = {{ promptStringOnce . "machine" "Machine role (workstation / laptop)" | quote }}
+    machine = {{ promptStringOnce . "machine" "Machine role (workstation / laptop / wsl / macbook)" | quote }}

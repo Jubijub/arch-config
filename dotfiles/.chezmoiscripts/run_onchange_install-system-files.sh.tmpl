@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+{{- $role := index .roles .machine }}
+{{- if not $role.systemfiles }}
+#
+# Nothing to do on the {{ .machine }} role: the drop-ins in system/ are
+# bare-metal Arch files. On macOS they would be meaningless anyway (and BSD
+# install(1) has no -D, /usr/share is SIP-protected, and there is no udevadm).
+exit 0
+{{- else }}
 #
 # Installs the repo's system/ drop-in files into /etc. chezmoi only manages
 # files under $HOME, so these "pure copy" system files are deployed here instead,
@@ -59,13 +67,15 @@ done
 install_file "etc/udev/rules.d/90-hypr-gpu.rules"
 sudo udevadm control --reload
 sudo udevadm trigger
-{{- else -}}
+{{- else if eq .machine "workstation" -}}
 # --- workstation: stable NVIDIA dGPU DRM symlink for AQ_DRM_DEVICES ---
 install_file "etc/udev/rules.d/90-hypr-gpu-workstation.rules"
 # OpenRGB needs /dev/i2c-* to see the SMBus RGB devices (DDR5 DIMMs, GPU).
 install_file "etc/modules-load.d/i2c-dev.conf"
 sudo udevadm control --reload
 sudo udevadm trigger
+{{- else -}}
+{{- fail (printf "install-system-files: role %q has systemfiles=true but no GPU drop-in rule is defined for it" .machine) -}}
 {{- end }}
 
 echo "Done."
@@ -90,4 +100,5 @@ echo "Done."
 {{- else -}}
 # 90-hypr-gpu-workstation.rules   {{ include "system/etc/udev/rules.d/90-hypr-gpu-workstation.rules" | sha256sum }}
 # i2c-dev.conf        {{ include "system/etc/modules-load.d/i2c-dev.conf" | sha256sum }}
+{{- end }}
 {{- end }}

@@ -1,15 +1,57 @@
+{{- /*
+     Role sanity check. This file is rendered on every apply, diff and status,
+     so it is where the machine role gets validated (the config template cannot
+     do it -- .chezmoidata.yaml is not loaded yet at `chezmoi init` time).
+*/ -}}
+{{- $role := index .roles .machine -}}
+{{- if not $role -}}
+{{-   fail (printf "unknown machine role %q -- valid roles are: %s. Re-run `chezmoi init` to fix the stored role." .machine (join ", " (keys .roles | sortAlpha))) -}}
+{{- end -}}
+{{- /*
+     skipRoleOsCheck is set only by the render-diff test harness (see
+     README.asciidoc, "Testing a change"), which renders another machine's
+     output from whatever box you are sitting at. Never set it in a real
+     ~/.config/chezmoi/chezmoi.toml.
+*/ -}}
+{{- $skipOsCheck := false -}}
+{{- if hasKey . "skipRoleOsCheck" -}}{{- $skipOsCheck = .skipRoleOsCheck -}}{{- end -}}
+{{- if and (not $skipOsCheck) (ne $role.os .chezmoi.os) -}}
+{{-   fail (printf "machine role %q expects os %q but this machine runs %q -- re-run `chezmoi init` with the right role." .machine $role.os .chezmoi.os) -}}
+{{- end -}}
 # Files in the chezmoi source that are NOT targets under $HOME.
 # system/ is installed into /etc by .chezmoiscripts/run_onchange_install-system-files.sh
 # (chezmoi can't manage files outside $HOME); README is repo documentation.
+# Brewfile and vscode-extensions.txt are read by run_onchange_ scripts, not deployed.
 # (Wallpapers under dot_local/share/wallpapers/ ARE deployed.)
 system
 README.asciidoc
+Brewfile
+vscode-extensions.txt
 
 # OpenRGB aRGB state is workstation-only hardware (ASUS Aura + G.Skill DIMMs).
-# Ignored anywhere that is NOT the workstation, so a future third machine role
-# does not inherit lighting config for hardware it doesn't have.
-{{ if ne .machine "workstation" -}}
+{{ if not $role.rgb -}}
 .config/OpenRGB
 .config/systemd/user/openrgb.service
 .local/bin/openrgb-apply
+{{ end -}}
+
+# Wayland / Hyprland desktop session. Nothing here means anything on a headless
+# Arch (WSL) or on macOS.
+{{ if not $role.desktop -}}
+.config/hypr
+.config/noctalia
+.config/pipewire
+.config/flameshot
+.config/gtk-3.0
+.config/systemd
+Pictures
+{{ end -}}
+
+# VSCode reads its settings from a different path on each OS, so the source tree
+# carries both and ignores the one that does not apply. Both render the same
+# shared partial (.chezmoitemplates/vscode-settings.json).
+{{ if eq $role.os "darwin" -}}
+.config/Code
+{{ else -}}
+Library
 {{ end -}}

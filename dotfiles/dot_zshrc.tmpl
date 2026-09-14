@@ -1,3 +1,4 @@
+{{- $role := index .roles .machine -}}
 ###################################################################################################
 # ZSH basic configuration
 #
@@ -51,8 +52,15 @@ export FZF_DEFAULT_OPTS="--height 20% --border \
     --color=border:#6C7086,label:#CDD6F4"
 
 #fzf key bindings, shipped by the fzf package itself (not a plugin)
+{{ if eq $role.os "darwin" -}}
+# Homebrew keeps them under the fzf keg rather than /usr/share, and guards the
+# sourcing because a plain `source` of a missing file aborts zsh startup.
+[ -r "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh" ] && source "$(brew --prefix)/opt/fzf/shell/key-bindings.zsh"
+[ -r "$(brew --prefix)/opt/fzf/shell/completion.zsh" ] && source "$(brew --prefix)/opt/fzf/shell/completion.zsh"
+{{- else -}}
 source /usr/share/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
+{{- end }}
 
 #Starship.rs
 eval "$(starship init zsh)"

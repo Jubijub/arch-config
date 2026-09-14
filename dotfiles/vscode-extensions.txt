@@ -1,0 +1,31 @@
+# VSCode extensions, installed by
+# .chezmoiscripts/run_onchange_install-vscode-extensions.sh.tmpl.
+#
+# Extensions are not files, so chezmoi cannot manage them the way it manages
+# settings.json -- this list plus the script is the closest equivalent. Blank
+# lines and # comments are ignored.
+#
+# Keep in sync with the Extensions table in the wiki, 07.Dev-environment.
+# To see what is actually installed: `code --list-extensions`.
+
+# General
+anthropic.claude-code                          # Claude Code in VSCode
+usernamehw.errorlens                           # inline display of compiler errors
+ms-vscode-remote.vscode-remote-extensionpack   # SSH / WSL remote development
+fanaticpythoner.better-todo-tree                # TODO highlighter with a file tree
+
+# Asciidoc
+asciidoctor.asciidoctor-vscode
+
+# Python
+ms-python.python
+
+# TOML
+tamasfe.even-better-toml
+
+# Rust
+rust-lang.rust-analyzer
+# NOTE: serayuzgur.crates was dropped -- the extension is deprecated.
+
+# Theme
+catppuccin.catppuccin-vsc

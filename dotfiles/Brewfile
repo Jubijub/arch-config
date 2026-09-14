@@ -1,0 +1,62 @@
+# Homebrew package set for the macbook role.
+#
+# Applied by .chezmoiscripts/run_onchange_darwin-brew-bundle.sh.tmpl on
+# `chezmoi apply`. Editing this file re-runs `brew bundle` on the next apply.
+# `brew bundle` is idempotent and additive: it never uninstalls anything that is
+# not listed here (that would need `brew bundle cleanup`).
+#
+# This is the macOS counterpart of the `pacman -S` / `yay -S` commands scattered
+# through the wiki -- see 05.Post-installation, 07.Dev-environment and
+# 09-tmux-Neovim for the Arch equivalents, and 12-MacOS for the bootstrap.
+
+# ── Shell ────────────────────────────────────────────────────────────────────
+brew "fish"          # login shell; must also be added to /etc/shells (see wiki 12)
+brew "starship"      # prompt
+brew "fzf"           # fuzzy finder, bound to Ctrl+T / Ctrl+R by fzf.fish
+brew "vivid"         # generates LS_COLORS for the Catppuccin theme
+
+# ── Core CLI ─────────────────────────────────────────────────────────────────
+brew "eza"           # ls replacement
+brew "bat"           # cat replacement
+brew "fd"            # find replacement
+brew "ripgrep"       # grep replacement; also required by telescope.nvim
+brew "jq"
+brew "btop"
+brew "git"
+brew "chezmoi"       # manages this very repo
+
+# ── FIDO2 / Yubikey (see wiki 08.SSH-FIDO2) ──────────────────────────────────
+# openssh is NOT optional: Apple builds its OpenSSH without the libfido2
+# middleware, so /usr/bin/ssh-keygen -t ed25519-sk fails outright.
+brew "openssh"
+brew "libfido2"
+brew "ykman"
+
+# ── Editor / multiplexer ─────────────────────────────────────────────────────
+brew "neovim"
+brew "tmux"          # TPM itself is a git clone, see .chezmoiexternal.toml.tmpl
+brew "tree-sitter"   # REQUIRED: nvim-treesitter's main branch compiles parsers with it
+
+# ── LSP servers and formatters for the nvim config ───────────────────────────
+# On Arch these come from pacman and lua/platform.lua skips Mason. On macOS
+# platform.lua sees no /etc/arch-release and falls back to Mason -- installing
+# them here anyway means Mason finds them already on PATH.
+brew "lua-language-server"
+brew "ruff"          # python linter/formatter
+brew "stylua"        # lua formatter
+brew "node"          # prettier/prettierd, and Mason's npm-based installers
+
+# ── Docs ─────────────────────────────────────────────────────────────────────
+brew "asciidoctor"   # renders the wiki (.asciidoc) locally
+
+# ── Python ───────────────────────────────────────────────────────────────────
+brew "uv"            # also used for `uv tool install ty` (manual, see wiki 12)
+
+# ── GUI ──────────────────────────────────────────────────────────────────────
+cask "ghostty"                    # terminal; config is chezmoi-managed
+cask "visual-studio-code"         # extensions installed by run_onchange_install-vscode-extensions
+
+# Fonts. Two deliberately different families: VSCode uses the plain cut, Ghostty
+# the Term cut (see wiki 07.Dev-environment).
+cask "font-iosevka-nerd-font"      # "Iosevka NF"            -- VSCode editor font
+cask "font-iosevka-term-nerd-font" # "IosevkaTerm Nerd Font" -- Ghostty
