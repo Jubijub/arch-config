@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-# Apply the workstation's aRGB colour, once OpenRGB's server has actually finished
-# detecting hardware. Called from openrgb.service (ExecStartPost).
+# Apply the workstation's aRGB zone sizes and colour, standalone, before OpenRGB's
+# resident server starts. Called from openrgb.service (ExecStartPre).
 #
 # IMPORTANT: run this with NO OpenRGB server running -- it is wired as the service's
 # ExecStartPre, i.e. before `openrgb --server` starts. A standalone `openrgb` does
@@ -26,37 +26,67 @@
 # all 5 devices, while the apply goes to the server and fails. Checking one thing
 # and doing another raced every time.
 #
-# Why the two controller families use DIFFERENT modes -- this is the non-obvious bit:
-#   ASUS Aura (fans, waterblock, MORA)  -> static
-#       Direct blanks a minute or two after the last client disconnects.
-#   ENE DRAM (2x G.Skill Trident Z5)    -> direct
-#       Static turns these off outright; only Direct lights them.
-# Direct is safe for the DIMMs only because this runs under a RESIDENT server, which
-# is the same thing that stops the Aura chain from blanking.
+# The board (ASUS Aura) uses `static`: Direct blanks a minute or two after the last
+# client disconnects.
 #
-# Device indices: the two DIMMs share the name "ENE DRAM", and a `-d "ENE DRAM"`
-# substring match hits both ambiguously and switches them off, so they must be
-# addressed by index. That is safe here because the board is the LAST of the five to
-# enumerate -- once the "$BOARD" apply below succeeds, 0 and 1 are the DIMMs.
+# The DIMMs are NOT set through openrgb at all -- `ram-rgb` talks to them over SMBus
+# directly. OpenRGB's ENE write path desyncs these modules' register pointer: colour
+# bytes land in control registers, and ENE_REG_DIRECT (0x8020) repeatedly ends up
+# holding 0xCC (a red colour byte) instead of 0x01. The module then stops honouring
+# Direct mode and displays its EFFECT registers, while GetDeviceMode() reads that
+# non-zero byte back as "Direct" and openrgb concludes no mode change is needed. The
+# result is silent: every command exits 0, the direct colour registers hold exactly
+# the right values, and the sticks show something else entirely -- stale colours from
+# whatever was in the effect registers, which is why the "wrong" LEDs appear to move
+# around between runs. ram-rgb writes each byte with an explicit address select and
+# verifies by read-back, retrying until the registers and the direct flag are right.
 #
-# CC0000 = pure red, zero green/blue. Catppuccin's reds all render pink through the
-# diffusers; see the OpenRGB section in wiki 06.
+# Why zone SIZES are asserted here rather than restored from a file -- addressable
+# zones report 0 LEDs until sized, so detected headers look dead. That value used to
+# live in a chezmoi-managed ~/.config/OpenRGB/sizes.ors, but OpenRGB 1.0 retired the
+# format: it migrates any leftover to sizes.ors.bak and keeps the sizes in
+# Configuration.json, which it rewrites on every run and which was never tracked. So
+# nothing reproduced them on a fresh machine. Re-asserting them on every start fixes
+# that and leaves Configuration.json as a cache nothing depends on.
+#
+# Why -sz is NOT its own command: `openrgb -d ProArt -z 0 -sz 120` on its own exits
+# 255 with "Device 0 specified, but neither mode nor color given" -- the CLI grammar
+# is `(--device [--mode] [--color])...`, so -z/-sz are modifiers on an apply, never an
+# action. Issued standalone it fails every time, and since apply_all retries from the
+# top, the unit sits in ExecStartPre burning 30 x (detect + 2s) and never starts the
+# server. Folding the three sizes into the board's own colour command also cuts three
+# full ~15s detection passes off every start.
+#
+# FF0000 = pure red, zero green/blue. Catppuccin's reds all render pink through the
+# diffusers; see the OpenRGB section in wiki 06. (FF4000 is the Windows colour, not
+# this one.)
 set -uo pipefail
+
+HERE="$(dirname "$(readlink -f "$0")")"
 
 # The PG32UCDM monitor (5 LEDs) is deliberately NOT managed here. Direct is its only
 # mode, so it blanks as soon as the standalone apply exits -- it would have to be set
 # after the server is up, i.e. as a client, which is the unreliable path. Not worth a
 # half-working step for a light that is barely visible.
-COLOR="CC0000"
+COLOR="FF0000"
 BOARD="ProArt"
+# Do NOT pass one colour per LED to the DIMMs. Spelling out all 8 (-c CC0000,CC0000,
+# ...) takes a different write path in the ENE driver that lands one byte out of phase
+# partway along the strip: the repeating CC 00 00 is then read as 00 00 CC, so half of
+# each stick turns blue with a purple LED at the seam. A single -c is correct here --
+# OpenRGB fills the remaining LEDs with the last colour given.
 TRIES=30
 SLEEP=2
 
 apply_all() {
-    # Board first: it enumerates last, so its success gates everything else.
-    openrgb -d "$BOARD" -m static -c "$COLOR" >/dev/null 2>&1 || return 1
-    openrgb -d 0        -m direct -c "$COLOR" >/dev/null 2>&1 || return 1
-    openrgb -d 1        -m direct -c "$COLOR" >/dev/null 2>&1 || return 1
+    # Board first: it enumerates last, so its success gates everything else. The zone
+    # sizes ride along in the SAME invocation as the colour -- see the -sz note above.
+    # 120 is the per-zone maximum; these are what the board runs (zone 0 full, 1/2 half).
+    openrgb -d "$BOARD" -z 0 -sz 120 -z 1 -sz 60 -z 2 -sz 60 \
+            -m static -c "$COLOR" >/dev/null 2>&1 || return 1
+    # DIMMs are NOT driven through openrgb -- see the ENE note above. Absolute path:
+    # the systemd user unit's PATH does not include ~/.local/bin.
+    "$HERE/ram-rgb" "$COLOR" || return 1
 }
 
 for _ in $(seq 1 "$TRIES"); do

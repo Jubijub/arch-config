@@ -1,0 +1,97 @@
+#!/usr/bin/env python3
+"""Set the ENE DRAM (DDR5) LEDs to a solid colour, with read-back verification.
+
+OpenRGB's ENE SMBus write path desyncs this controller's register pointer: colour
+bytes land in control registers (ENE_REG_DIRECT repeatedly ends up holding 0xCC),
+so the module stops honouring Direct mode and displays its EFFECT registers instead.
+Every byte here is written with an explicit address select, then verified.
+"""
+import smbus, sys, time, glob, os
+
+DEVS       = [0x71, 0x73]
+DIRECT_V2  = 0x8100
+REG_DIRECT = 0x8020
+REG_APPLY  = 0x80A0
+APPLY_VAL  = 0x01
+NLED       = 8
+RETRIES    = 5
+
+def find_bus():
+    for p in glob.glob('/sys/class/i2c-dev/i2c-*/name'):
+        try:
+            if 'SMBus PIIX4 adapter port 0' in open(p).read():
+                return int(os.path.basename(os.path.dirname(p)).split('-')[1])
+        except OSError:
+            pass
+    raise SystemExit("PIIX4 SMBus port 0 not found")
+
+BUS = find_bus()
+bus = smbus.SMBus(BUS)
+
+def sel(dev, reg):
+    bus.write_word_data(dev, 0x00, ((reg << 8) & 0xFF00) | ((reg >> 8) & 0x00FF))
+    time.sleep(0.001)
+
+def rd(dev, reg):
+    sel(dev, reg); return bus.read_byte_data(dev, 0x81)
+
+def wr(dev, reg, val):
+    sel(dev, reg); bus.write_byte_data(dev, 0x01, val); time.sleep(0.001)
+
+def apply_colour(dev, r, g, b):
+    # wire order within each LED triple is R, B, G
+    want = {}
+    for led in range(NLED):
+        base = DIRECT_V2 + 3 * led
+        want[base + 0] = r
+        want[base + 1] = b
+        want[base + 2] = g
+    for attempt in range(1, RETRIES + 1):
+        for reg, val in want.items():
+            if rd(dev, reg) != val:
+                wr(dev, reg, val)
+        bad = [f"0x{reg:04X}" for reg, val in want.items() if rd(dev, reg) != val]
+        # the direct flag must be exactly 1, and gets clobbered by bad writes
+        if rd(dev, REG_DIRECT) != 0x01:
+            wr(dev, REG_DIRECT, 0x01)
+            wr(dev, REG_APPLY, APPLY_VAL)
+            bad.append("DIRECT")
+        if not bad:
+            return attempt
+    return None
+
+EFFECT_V2 = 0x8160
+REG_MODE  = 0x8021
+
+if len(sys.argv) > 1 and sys.argv[1] in ("--dump", "-d"):
+    # Read-only: what the hardware actually holds. Stop openrgb.service first.
+    for dev in DEVS:
+        print(f"=== stick @ 0x{dev:02X} ===")
+        print(f"  ENE_REG_DIRECT=0x{rd(dev,REG_DIRECT):02X} (must be 0x01)"
+              f"  ENE_REG_MODE=0x{rd(dev,REG_MODE):02X}")
+        for tag, base in (("DIRECT", DIRECT_V2), ("EFFECT", EFFECT_V2)):
+            leds = []
+            for led in range(NLED):
+                r_ = rd(dev, base + 3*led + 0)
+                b_ = rd(dev, base + 3*led + 1)   # wire order R, B, G
+                g_ = rd(dev, base + 3*led + 2)
+                leds.append(f"L{led+1}={r_:02X}{g_:02X}{b_:02X}")
+            print(f"  {tag}: " + " ".join(leds))
+    sys.exit(0)
+
+if len(sys.argv) > 1 and sys.argv[1] in ("--help", "-h"):
+    print("usage: ram-rgb [RRGGBB]   set both DIMMs to a colour (default CC0000)")
+    print("       ram-rgb --dump     read back the ENE registers (read-only)")
+    sys.exit(0)
+
+colour = sys.argv[1] if len(sys.argv) > 1 else "CC0000"
+r, g, b = int(colour[0:2],16), int(colour[2:4],16), int(colour[4:6],16)
+
+failed = False
+for dev in DEVS:
+    n = apply_colour(dev, r, g, b)
+    if n is None:
+        print(f"ram-rgb: 0x{dev:02X} failed to verify after {RETRIES} passes", file=sys.stderr)
+        failed = True
+
+sys.exit(1 if failed else 0)
