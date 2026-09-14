@@ -20,7 +20,10 @@ hl.monitor({
 -- RTX 5090. NOTE: pin the refresh explicitly -- the EDID "preferred" mode is only
 -- 60Hz, so `mode = "preferred"` silently ran the 240Hz panel at 60Hz.
 hl.monitor({
-    output   = "DP-5",
+    -- Match on DESCRIPTION, not the DP-n port name: the connector number is not
+    -- stable (this was DP-5 until an update renumbered it to DP-3, which silently
+    -- broke every workspace rule pinned to it -- see the workspace section below).
+    output   = "desc:ASUSTek COMPUTER INC PG32UCDM",
     mode     = "3840x2160@240",
     position = "0x0",
     scale    = "1",
@@ -327,7 +330,12 @@ hl.device({
 {{ if eq .machine "laptop" -}}
 local mainMonitor = "eDP-2"
 {{- else if eq .machine "workstation" -}}
-local mainMonitor = "DP-5" -- workstation: the RTX 5090's 4K output
+local mainMonitor = "desc:ASUSTek COMPUTER INC PG32UCDM" -- workstation: RTX 5090 4K output
+-- Description, not "DP-n": the port number changed (DP-5 -> DP-3) across an update
+-- and the persistent workspace rules below stopped matching, so NO workspace was
+-- ever created -- leaving a single ad-hoc workspace with whatever number happened
+-- to get focused. The rules fail silently: `hyprctl workspacerules` still lists
+-- them, they just never apply. `hyprctl monitors` shows the current description.
 {{- else -}}
 {{- fail (printf "hyprland.lua.tmpl: no monitor/GPU configuration defined for machine role %q" .machine) -}}
 {{- end }}
@@ -336,9 +344,14 @@ local termWorkspace, termIcon = 1, ""
 local webWorkspace,  webIcon  = 2, "󰊯"
 local devWorkspace,  devIcon  = 3, ""
 
-hl.workspace_rule({ workspace = termWorkspace, default_name = termIcon, monitor = mainMonitor, persistent = true, layout = "master", default = true })
-hl.workspace_rule({ workspace = webWorkspace,  default_name = webIcon,  monitor = mainMonitor, persistent = true, layout = "master", layout_opts = { orientation = "center" } })
-hl.workspace_rule({ workspace = devWorkspace,  default_name = devIcon,  monitor = mainMonitor, persistent = true, layout = "master" })
+-- NO `monitor =` binding on purpose: these machines have a single display, and
+-- pinning to a connector name is what broke this before (DP-5 -> DP-3 after an
+-- update; the rules still listed fine in `hyprctl workspacerules`, they just never
+-- matched, so no workspace was ever created). Without the binding they land on
+-- whatever monitor is actually connected.
+hl.workspace_rule({ workspace = termWorkspace, default_name = termIcon, persistent = true, layout = "master", default = true })
+hl.workspace_rule({ workspace = webWorkspace,  default_name = webIcon,  persistent = true, layout = "master", layout_opts = { orientation = "center" } })
+hl.workspace_rule({ workspace = devWorkspace,  default_name = devIcon,  persistent = true, layout = "master" })
 
 -- The web workspace uses center orientation (above), so a single window is
 -- centered and sized to `mfact`. `mfact` cannot be set per-workspace via a
