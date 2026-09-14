@@ -35,7 +35,10 @@ brew "ykman"
 # ── Editor / multiplexer ─────────────────────────────────────────────────────
 brew "neovim"
 brew "tmux"          # TPM itself is a git clone, see .chezmoiexternal.toml.tmpl
-brew "tree-sitter"   # REQUIRED: nvim-treesitter's main branch compiles parsers with it
+brew "tree-sitter-cli" # REQUIRED: nvim-treesitter's main branch compiles parsers
+                       # with it. NOTE the formula is tree-sitter-CLI: plain
+                       # "tree-sitter" is the library only and installs no binary,
+                       # so nvim fails with ENOENT ... 'tree-sitter' on launch.
 
 # ── LSP servers and formatters for the nvim config ───────────────────────────
 # On Arch these come from pacman and lua/platform.lua skips Mason. On macOS
