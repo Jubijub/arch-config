@@ -24,6 +24,11 @@
 #   desktop     -- Hyprland/Wayland session: hypr, noctalia, pipewire, flameshot, gtk
 #   sysmon      -- Noctalia system-monitor bar widgets (needs a dGPU worth polling)
 #   rgb         -- OpenRGB hardware (ASUS Aura + G.Skill DIMMs)
+#   monitor     -- desktop roles only: the single display's hl.monitor() settings.
+#                  `output` should be a `desc:` match, NOT a DP-n/eDP-n connector
+#                  name: connector numbering is not stable across driver updates
+#                  (the workstation's panel moved DP-5 -> DP-3 and silently took
+#                  every workspace rule pinned to it down with it).
 roles:
   # Asus Creator X870e + 9950X3D + RTX 5090, 4K@240 (takemyheataway)
   workstation:
@@ -33,6 +38,13 @@ roles:
     desktop: true
     sysmon: true
     rgb: true
+    # Pin the refresh explicitly: this panel's EDID "preferred" mode is only 60Hz,
+    # so `mode = "preferred"` silently runs the 240Hz panel at 60.
+    monitor:
+      output: "desc:ASUSTek COMPUTER INC PG32UCDM"
+      mode: "3840x2160@240"
+      position: "0x0"
+      scale: "1"
   # Lenovo Legion Pro 7i Gen 10, Intel iGPU + RTX 5080 Max-Q
   laptop:
     os: linux
@@ -41,6 +53,14 @@ roles:
     desktop: true
     sysmon: false
     rgb: false
+    # TODO: replace with a `desc:` match -- run `hyprctl monitors | grep description`
+    # on the laptop and use that. eDP-n numbering is more stable than DP-n, but it
+    # is the same class of breakage.
+    monitor:
+      output: "eDP-2"
+      mode: "2560x1600@240"
+      position: "auto"
+      scale: "1"
   # Arch on WSL2: no graphical session, no hardware of its own.
   # Declared so that the `else` branches stop meaning "workstation"; no
   # WSL-specific configuration is authored yet.

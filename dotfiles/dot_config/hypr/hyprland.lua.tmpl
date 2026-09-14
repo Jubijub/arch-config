@@ -1,3 +1,4 @@
+{{- $role := index .roles .machine -}}
 
 -- Create your files separately and then require them like this:
 -- require("myColors")
@@ -8,29 +9,19 @@
 ------------------
 
 -- See https://wiki.hypr.land/Configuring/Basics/Monitors/
-{{ if eq .machine "laptop" -}}
-hl.monitor({
-    output   = "eDP-2",
-    mode     = "2560x1600@240",
-    position = "auto",
-    scale    = "1",
-})
-{{- else if eq .machine "workstation" -}}
--- Workstation (takemyheataway): single 4K@240 display (ASUS PG32UCDM) on the
--- RTX 5090. NOTE: pin the refresh explicitly -- the EDID "preferred" mode is only
--- 60Hz, so `mode = "preferred"` silently ran the 240Hz panel at 60Hz.
-hl.monitor({
-    -- Match on DESCRIPTION, not the DP-n port name: the connector number is not
-    -- stable (this was DP-5 until an update renumbered it to DP-3, which silently
-    -- broke every workspace rule pinned to it -- see the workspace section below).
-    output   = "desc:ASUSTek COMPUTER INC PG32UCDM",
-    mode     = "3840x2160@240",
-    position = "0x0",
-    scale    = "1",
-})
-{{- else -}}
-{{- fail (printf "hyprland.lua.tmpl: no monitor/GPU configuration defined for machine role %q" .machine) -}}
+{{- if not (hasKey $role "monitor") -}}
+{{- fail (printf "hyprland.lua.tmpl: role %q has no `monitor` block in .chezmoidata.yaml" .machine) -}}
 {{- end }}
+-- Settings come from the role's `monitor` block in .chezmoidata.yaml, so adding a
+-- machine does not mean editing this file. `output` is a `desc:` match rather than
+-- a DP-n/eDP-n connector name -- connector numbering is not stable across driver
+-- updates.
+hl.monitor({
+    output   = "{{ $role.monitor.output }}",
+    mode     = "{{ $role.monitor.mode }}",
+    position = "{{ $role.monitor.position }}",
+    scale    = "{{ $role.monitor.scale }}",
+})
 
 
 ---------------------
@@ -325,20 +316,6 @@ hl.device({
 --------------------
 ---- WORKSPACES ----
 --------------------
-
--- Monitor the persistent workspaces are pinned to (machine-specific).
-{{ if eq .machine "laptop" -}}
-local mainMonitor = "eDP-2"
-{{- else if eq .machine "workstation" -}}
-local mainMonitor = "desc:ASUSTek COMPUTER INC PG32UCDM" -- workstation: RTX 5090 4K output
--- Description, not "DP-n": the port number changed (DP-5 -> DP-3) across an update
--- and the persistent workspace rules below stopped matching, so NO workspace was
--- ever created -- leaving a single ad-hoc workspace with whatever number happened
--- to get focused. The rules fail silently: `hyprctl workspacerules` still lists
--- them, they just never apply. `hyprctl monitors` shows the current description.
-{{- else -}}
-{{- fail (printf "hyprland.lua.tmpl: no monitor/GPU configuration defined for machine role %q" .machine) -}}
-{{- end }}
 
 local termWorkspace, termIcon = 1, ""
 local webWorkspace,  webIcon  = 2, "󰊯"
