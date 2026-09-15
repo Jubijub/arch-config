@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+{{- $role := index .roles .machine }}
+#
+# SSH_ASKPASS helper: asks for the FIDO2 key PIN in a graphical dialog instead of
+# on a terminal.
+#
+# Why this exists: a FIDO2 key needs a PIN typed and a physical touch for every
+# signature and every connection. ssh normally reads the PIN from the controlling
+# terminal, so anything running without one -- an agentic session, a hook, a CI
+# step -- cannot authenticate at all, and fails with "agent refused operation" or
+# "Permission denied (publickey)". Pointing SSH_ASKPASS here, with
+# SSH_ASKPASS_REQUIRE=force, gives ssh somewhere else to ask.
+#
+# This does NOT weaken anything: the touch is still required and still physical,
+# so no signature or connection can happen without a deliberate tap on the key.
+# Only the place the PIN is typed changes.
+#
+# Do NOT export SSH_ASKPASS_REQUIRE=force from a shell profile. It would apply to
+# interactive terminals too, and every hand-run `git push` would start popping a
+# dialog instead of prompting where you are already typing. Scope it to the
+# process that actually lacks a terminal (see ~/.claude/settings.json).
+#
+# ssh passes the prompt text as $1.
+set -euo pipefail
+
+PROMPT="${1:-Enter PIN for FIDO2 key}"
+
+{{ if eq $role.os "darwin" -}}
+# macOS: osascript ships with the OS, so there is nothing to install. Passing the
+# prompt through argv rather than interpolating it into the AppleScript source
+# keeps a prompt containing quotes from breaking (or injecting into) the script.
+exec /usr/bin/osascript - "$PROMPT" <<'OSA'
+on run argv
+    set p to item 1 of argv
+    display dialog p default answer "" with hidden answer ¬
+        with title "SSH / FIDO2" buttons {"Cancel", "OK"} default button "OK"
+    return text returned of result
+end run
+OSA
+{{- else -}}
+# Linux: zenity, deliberately. It is GTK3 and lives in `extra`, so it matches the
+# rest of this desktop (Nautilus, xdg-desktop-portal-gtk) and pulls in no Qt.
+# It runs natively under Wayland, so Hyprland needs no XWayland detour.
+if ! command -v zenity >/dev/null 2>&1; then
+    echo "ssh-askpass: zenity not found -- install it with: yay -S zenity" >&2
+    exit 1
+fi
+
+# --password gives a masked entry. zenity writes the value on stdout, which is
+# exactly what ssh expects to read back.
+exec zenity --password --title="SSH / FIDO2" --text="$PROMPT" 2>/dev/null
+{{- end }}
