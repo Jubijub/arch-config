@@ -33,6 +33,7 @@ vscode-extensions.txt
 .config/OpenRGB
 .config/systemd/user/openrgb.service
 .local/bin/openrgb-apply
+.local/bin/ram-rgb
 {{ end -}}
 
 # Wayland / Hyprland desktop session. Nothing here means anything on a headless
