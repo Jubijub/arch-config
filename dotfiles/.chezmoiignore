@@ -22,8 +22,10 @@
 # system/ is installed into /etc by .chezmoiscripts/run_onchange_install-system-files.sh
 # (chezmoi can't manage files outside $HOME); README is repo documentation.
 # Brewfile and vscode-extensions.txt are read by run_onchange_ scripts, not deployed.
+# macos/ holds the TIS helper compiled by run_after_darwin-keyboard-layout.sh.
 # (Wallpapers under dot_local/share/wallpapers/ ARE deployed.)
 system
+macos
 README.asciidoc
 Brewfile
 vscode-extensions.txt

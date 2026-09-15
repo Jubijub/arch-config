@@ -67,6 +67,10 @@ deploying the wrong tree.
   `systemfiles` is false.
 * `Brewfile` + `run_onchange_darwin-brew-bundle.sh.tmpl` install the macOS
   package set. The Arch equivalent is still the `pacman -S` commands in the wiki.
+* `macos/set-input-sources.swift` + `run_after_darwin-keyboard-layout.sh.tmpl`
+  install the `us-altgr-intl` keyboard layout (the macOS counterpart to the
+  `us` / `altgr-intl` XKB variant) and make it the default input source in both
+  the session and the login window. No-op on Linux.
 * `vscode-extensions.txt` + `run_onchange_install-vscode-extensions.sh.tmpl`
   install the VSCode extension set on *both* OSes (extensions are not files, so
   chezmoi cannot manage them the way it manages `settings.json`).
@@ -139,6 +143,9 @@ nothing.
 * `Pictures/Wallpapers/` : wallpapers (Noctalia's default wallpaper folder).
 * `system/etc/` : `/etc` drop-ins (locale, resolvconf, reflector, pacman hooks, and
   the Legion-only `90-hypr-gpu.rules`), installed by the run-script.
+* `macos/` : macOS-only helpers that are not `$HOME` files. Currently the Swift
+  utility that drives the Text Input Sources API; run from the source tree, never
+  deployed.
 * `.chezmoidata.yaml` : the machine roles table (see above).
 * `Brewfile`, `vscode-extensions.txt` : package / extension lists read by the
   run-scripts. Not deployed to `$HOME`.

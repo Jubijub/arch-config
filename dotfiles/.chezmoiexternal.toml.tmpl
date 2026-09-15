@@ -11,4 +11,18 @@
     type = "git-repo"
     url = "https://github.com/tmux-plugins/tpm.git"
     refreshPeriod = "168h"
+
+# The us-altgr-intl keyboard layout (US layout, accents on AltGr, no dead keys) --
+# the macOS counterpart to the `us` / `altgr-intl` XKB variant the Arch machines
+# use. Upstream ships a single static .keylayout file; the default branch is
+# `master`.
+#
+# It is staged here under $HOME because chezmoi only writes inside $HOME, but this
+# is NOT its final home: run_after_darwin-keyboard-layout.sh copies it into
+# /Library/Keyboard Layouts with sudo, which is what makes it available at the
+# login window as well as in the session.
+[".local/share/keyboard-layouts/us-altgr-intl.keylayout"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/carjorvaz/macos-us-altgr-intl/master/us-altgr-intl.keylayout"
+    refreshPeriod = "168h"
 {{- end }}

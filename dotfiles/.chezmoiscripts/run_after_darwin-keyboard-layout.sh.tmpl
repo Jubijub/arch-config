@@ -1,0 +1,177 @@
+#!/usr/bin/env bash
+{{- $role := index .roles .machine }}
+{{- if ne $role.os "darwin" }}
+# Not a macOS machine -- the Linux equivalent is the `us` / `altgr-intl` pair set
+# by localectl (wiki 06) plus the greeter's [keyboard] block in greeter.toml.
+exit 0
+{{- else }}
+#
+# Installs the us-altgr-intl keyboard layout and makes it the default input
+# source, both in the logged-in session AND at the login window.
+#
+# run_after_ (not run_onchange_) on purpose, twice over:
+#
+#   1. The .keylayout is a chezmoi *external*, so its content is not in the
+#      source tree and `include ... | sha256sum` cannot hash it -- a
+#      run_onchange_ script would not notice upstream changing the file.
+#   2. run_after_ guarantees this runs once the external has actually been
+#      downloaded; a bare run_onchange_ is ordered by target path against it.
+#
+# Running on every apply is only acceptable because every step below is guarded
+# by a comparison: a no-op apply touches nothing and, importantly, never calls
+# sudo -- so it does not prompt for a password. sudo is reached only when the
+# layout file or the login-window plist genuinely has to change.
+set -euo pipefail
+
+STAGED="$HOME/.local/share/keyboard-layouts/us-altgr-intl.keylayout"
+INSTALLED="/Library/Keyboard Layouts/us-altgr-intl.keylayout"
+HELPER="{{ .chezmoi.sourceDir }}/macos/set-input-sources.swift"
+HELPER_BIN="$HOME/.cache/chezmoi-macos/set-input-sources"
+
+# Ordered fallback chain, most-preferred first. This is the order the input menu
+# lists them in, and the first entry is what becomes the default everywhere.
+LAYOUTS=(
+    org.unknown.keylayout.us-altgr-intl
+    com.apple.keylayout.ABC
+    com.apple.keylayout.SwissGerman
+)
+
+if [ ! -f "$STAGED" ]; then
+    echo "keyboard-layout: $STAGED missing -- the chezmoi external did not download." >&2
+    echo "  Check connectivity and re-run; see .chezmoiexternal.toml.tmpl." >&2
+    exit 1
+fi
+
+# --- 1. the layout file itself -------------------------------------------------
+# /Library (not ~/Library) is deliberate and is the whole reason this needs sudo:
+# a layout under ~/Library/Keyboard Layouts exists only for the logged-in user and
+# is NOT available at the login window, which is half of what we want here.
+needs_install=1
+if [ -f "$INSTALLED" ] && \
+   [ "$(shasum -a 256 <"$STAGED" | cut -d' ' -f1)" = "$(shasum -a 256 <"$INSTALLED" | cut -d' ' -f1)" ]; then
+    needs_install=0
+fi
+
+if [ "$needs_install" = 1 ]; then
+    echo "Installing us-altgr-intl.keylayout into /Library/Keyboard Layouts ..."
+    sudo install -m 644 -o root -g wheel "$STAGED" "$INSTALLED"
+    echo "  NOTE: a newly installed layout is only picked up by the input-source"
+    echo "  machinery after a logout/reboot. If the next step reports it as not"
+    echo "  installed, reboot and run \`chezmoi apply\` again."
+fi
+
+# --- 2. enabled + selected input sources (logged-in session) --------------------
+# Compiled once and cached: `swift file.swift` recompiles on every run, which is
+# too slow for a script that runs on every apply.
+if [ ! -x "$HELPER_BIN" ] || [ "$HELPER" -nt "$HELPER_BIN" ]; then
+    mkdir -p "$(dirname "$HELPER_BIN")"
+    swiftc -O -o "$HELPER_BIN" "$HELPER"
+fi
+
+rc=0
+LAYOUT_NAMES="$("$HELPER_BIN" "${LAYOUTS[@]}")" || rc=$?
+if [ "$rc" = 2 ]; then
+    echo "keyboard-layout: reboot and re-run \`chezmoi apply\` to finish." >&2
+    exit 0
+elif [ "$rc" != 0 ]; then
+    exit "$rc"
+fi
+
+# --- 3. the login window --------------------------------------------------------
+# loginwindow reads the *system* HIToolbox domain, a separate plist from the user
+# one. Rather than synthesise entries (they are keyed by an opaque numeric
+# "KeyboardLayout ID"), harvest the ones macOS itself resolved in step 2.
+#
+# Harvesting is NOT just a copy of the user domain's AppleEnabledInputSources:
+# macOS leaves third-party layouts out of that array entirely. us-altgr-intl shows
+# up only under AppleSelectedInputSources, so copying the enabled array alone would
+# hand the login window a list WITHOUT the layout this whole script exists to
+# install. The union of enabled + selected is what actually describes the set.
+#
+# AppleInputSourceHistory is deliberately NOT part of that union: it retains
+# layouts that have since been disabled (Swiss French lingers there), and folding
+# it in would silently resurrect them at the login window.
+#
+# `defaults export` rather than reading the plist file directly: cfprefsd caches
+# writes, so the on-disk file can lag behind the live value.
+SYSTEM_DOMAIN=/Library/Preferences/com.apple.HIToolbox
+PENDING="$(mktemp -t hitoolbox)"
+trap 'rm -f "$PENDING"' EXIT
+
+# Exit codes from the block below: 0 = a change is staged in $PENDING,
+# 10 = already correct, anything else = a real failure (which must NOT be
+# mistaken for "nothing to do" and silently skipped).
+set +e
+LAYOUT_NAMES="$LAYOUT_NAMES" python3 - "$SYSTEM_DOMAIN" "$PENDING" <<'PYEOF'
+import os, plistlib, subprocess, sys
+
+system_domain, pending_path = sys.argv[1], sys.argv[2]
+# Display names in fallback order, straight from the Text Input Sources API.
+order = [n for n in os.environ.get("LAYOUT_NAMES", "").splitlines() if n]
+
+def export(domain):
+    out = subprocess.run(["defaults", "export", domain, "-"],
+                         capture_output=True, check=True).stdout
+    return plistlib.loads(out) if out.strip() else {}
+
+user = export("com.apple.HIToolbox")
+
+# Union of enabled + selected, deduplicated on the numeric id. See the note above
+# for why the enabled array alone is not enough and why history is excluded.
+found, seen = [], set()
+for key in ("AppleEnabledInputSources", "AppleSelectedInputSources"):
+    for e in user.get(key, []):
+        if e.get("InputSourceKind") != "Keyboard Layout":
+            continue
+        kid = e.get("KeyboardLayout ID")
+        if kid in seen:
+            continue
+        seen.add(kid)
+        found.append(e)
+
+if not found:
+    print("no keyboard layouts found in the user domain -- step 2 failed?",
+          file=sys.stderr)
+    sys.exit(1)
+
+# Re-impose the fallback order; anything unrecognised keeps its relative position
+# at the end rather than being dropped.
+rank = {name: i for i, name in enumerate(order)}
+layouts = sorted(found, key=lambda e: rank.get(e.get("KeyboardLayout Name"), len(rank)))
+
+missing = [n for n in order if n not in {e.get("KeyboardLayout Name") for e in layouts}]
+if missing:
+    print("warning: not represented in the preference domain: "
+          + ", ".join(missing), file=sys.stderr)
+
+system = export(system_domain)
+desired = dict(system)
+desired["AppleEnabledInputSources"] = layouts
+desired["AppleSelectedInputSources"] = layouts[:1]
+desired["AppleDefaultAsciiInputSource"] = layouts[0]
+cur = user.get("AppleCurrentKeyboardLayoutInputSourceID")
+if cur:
+    desired["AppleCurrentKeyboardLayoutInputSourceID"] = cur
+
+if desired == system:
+    sys.exit(10)
+with open(pending_path, "wb") as fh:
+    plistlib.dump(desired, fh)
+PYEOF
+prc=$?
+set -e
+
+case "$prc" in
+    0)
+        echo "Updating the login-window input sources ..."
+        sudo defaults import "$SYSTEM_DOMAIN" "$PENDING"
+        ;;
+    10) ;;   # already correct
+    *)
+        echo "keyboard-layout: failed to compute the login-window input sources." >&2
+        exit 1
+        ;;
+esac
+
+echo "Keyboard layout: us-altgr-intl (fallbacks: ABC, Swiss German)."
+{{- end }}
