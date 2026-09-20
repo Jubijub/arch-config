@@ -21,14 +21,33 @@
 #   systemfiles -- bare-metal Arch: the /etc drop-ins in system/ are installed.
 #                  False on WSL (no greeter, no GPU udev rules, no reflector) and
 #                  on macOS (no /etc drop-ins, and BSD install(1) has no -D).
-#   desktop     -- Hyprland/Wayland session: hypr, noctalia, pipewire, flameshot, gtk
+#   desktop     -- niri/Wayland session: niri, noctalia, pipewire, flameshot, gtk,
+#                  zathura, the rclone mount unit
 #   sysmon      -- Noctalia system-monitor bar widgets (needs a dGPU worth polling)
 #   rgb         -- OpenRGB hardware (ASUS Aura + G.Skill DIMMs)
-#   monitor     -- desktop roles only: the single display's hl.monitor() settings.
-#                  `output` should be a `desc:` match, NOT a DP-n/eDP-n connector
-#                  name: connector numbering is not stable across driver updates
-#                  (the workstation's panel moved DP-5 -> DP-3 and silently took
-#                  every workspace rule pinned to it down with it).
+#   nvidia_dm   -- the desktop session (compositor) RENDERS on the NVIDIA GPU:
+#                  installs niri's NVIDIA application profile. False on the
+#                  laptop: it has an RTX 5080 too, but niri runs on the Intel
+#                  iGPU there (see `gpu`), so the profile would do nothing.
+#   numlock     -- turn numlock on at niri start (Keychron K0 Max numpad emits
+#                  Home/End/arrows without it)
+#   backlight   -- brightnessctl device name for the panel backlight, "" when
+#                  the brightness keys should stay unbound (no panel)
+#   monitor     -- desktop roles only: the single display, for niri's `output`.
+#                  `output` is "<make> <model> <serial>" as printed by
+#                  `niri msg outputs`, NOT a DP-n/eDP-n connector name: connector
+#                  numbering is not stable across driver updates (the
+#                  workstation's panel moved DP-5 -> DP-3 and silently took every
+#                  workspace rule pinned to it down with it). `mode` carries NO
+#                  refresh rate on purpose: niri then picks the highest rate for
+#                  that resolution, whereas "@240" would have to match the EDID
+#                  value to three decimals or silently fall back to the
+#                  60 Hz "preferred" mode. `position` is "XxY" or "auto".
+#   gpu         -- desktop roles only. `render_device`: the DRM render node niri
+#                  draws with (by-path symlinks are fine, niri resolves them).
+#                  `ignore_devices`: DRM nodes niri must never open.
+#                  `egl_vendor_json`: GLVND vendor file forced on desktop apps
+#                  ("" = all vendors).
 roles:
   # Asus Creator X870e + 9950X3D + RTX 5090, 4K@240 (takemyheataway)
   workstation:
@@ -38,13 +57,21 @@ roles:
     desktop: true
     sysmon: true
     rgb: true
-    # Pin the refresh explicitly: this panel's EDID "preferred" mode is only 60Hz,
-    # so `mode = "preferred"` silently runs the 240Hz panel at 60.
+    nvidia_dm: true
+    numlock: true
+    backlight: ""
     monitor:
-      output: "desc:ASUSTek COMPUTER INC PG32UCDM"
-      mode: "3840x2160@240"
+      output: "ASUSTek COMPUTER INC PG32UCDM S7LMQS031166"
+      mode: "3840x2160"
       position: "0x0"
       scale: "1"
+    gpu:
+      # The RTX 5090 (PCI 01:00.0) drives the panel; the AMD Granite Ridge iGPU
+      # (79:00.0) cannot. The NVIDIA card is also boot_vga, so niri would pick it
+      # anyway -- pinned so the choice does not depend on enumeration order.
+      render_device: "/dev/dri/by-path/pci-0000:01:00.0-render"
+      ignore_devices: []
+      egl_vendor_json: ""
   # Lenovo Legion Pro 7i Gen 10, Intel iGPU + RTX 5080 Max-Q
   laptop:
     os: linux
@@ -53,14 +80,30 @@ roles:
     desktop: true
     sysmon: false
     rgb: false
-    # TODO: replace with a `desc:` match -- run `hyprctl monitors | grep description`
-    # on the laptop and use that. eDP-n numbering is more stable than DP-n, but it
-    # is the same class of breakage.
+    nvidia_dm: false
+    numlock: false
+    # `intel_backlight` is the eDP panel (on the iGPU). `nvidia_0` also exists
+    # and controls nothing; bare brightnessctl would pick it. `brightnessctl -l`.
+    backlight: "intel_backlight"
     monitor:
+      # TODO(laptop): replace with "<make> <model> <serial>" from `niri msg outputs`.
+      # eDP-n numbering is more stable than DP-n, but it is the same class of
+      # breakage.
       output: "eDP-2"
-      mode: "2560x1600@240"
+      mode: "2560x1600"
       position: "auto"
       scale: "1"
+    gpu:
+      # Render on the Intel iGPU (00:02.0) and never open the RTX 5080 (02:00.0),
+      # so the dGPU runtime-suspends to D3cold for battery. Games still reach it
+      # through PRIME render-offload / the Vulkan ICD. Trade-off: the HDMI port is
+      # wired to the NVIDIA GPU and will NOT work; USB-C/Thunderbolt DP outputs
+      # run through Intel and do. To use HDMI, empty `ignore_devices`.
+      render_device: "/dev/dri/by-path/pci-0000:00:02.0-render"
+      ignore_devices: ["/dev/dri/by-path/pci-0000:02:00.0-card"]
+      # Load ONLY the Mesa EGL driver: GLVND otherwise opens libEGL_nvidia to
+      # enumerate GPUs and its EGL display keeps the dGPU in D0 (~4 W) when idle.
+      egl_vendor_json: "/usr/share/glvnd/egl_vendor.d/50_mesa.json"
   # Arch on WSL2: no graphical session, no hardware of its own.
   # Declared so that the `else` branches stop meaning "workstation"; no
   # WSL-specific configuration is authored yet.
@@ -71,6 +114,9 @@ roles:
     desktop: false
     sysmon: false
     rgb: false
+    nvidia_dm: false
+    numlock: false
+    backlight: ""
   # MacBook "Neo", Apple Silicon. Homebrew instead of pacman, no Wayland.
   macbook:
     os: darwin
@@ -79,3 +125,6 @@ roles:
     desktop: false
     sysmon: false
     rgb: false
+    nvidia_dm: false
+    numlock: false
+    backlight: ""

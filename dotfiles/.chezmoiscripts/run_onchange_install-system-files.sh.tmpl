@@ -4,7 +4,7 @@
 #
 # Nothing to do on the {{ .machine }} role: the drop-ins in system/ are
 # bare-metal Arch files. On macOS they would be meaningless anyway (and BSD
-# install(1) has no -D, /usr/share is SIP-protected, and there is no udevadm).
+# install(1) has no -D, and /usr/share is SIP-protected).
 exit 0
 {{- else }}
 #
@@ -62,21 +62,15 @@ for wp in "$WALLPAPERS"/*; do
     echo "  installed /usr/share/backgrounds/$(basename "$wp")"
 done
 
-{{ if eq .machine "laptop" -}}
-# --- laptop: stable Intel iGPU / NVIDIA dGPU DRM symlinks for AQ_DRM_DEVICES ---
-install_file "etc/udev/rules.d/90-hypr-gpu.rules"
-sudo udevadm control --reload
-sudo udevadm trigger
-{{- else if eq .machine "workstation" -}}
-# --- workstation: stable NVIDIA dGPU DRM symlink for AQ_DRM_DEVICES ---
-install_file "etc/udev/rules.d/90-hypr-gpu-workstation.rules"
-# OpenRGB needs /dev/i2c-* to see the SMBus RGB devices (DDR5 DIMMs, GPU).
+{{ if $role.rgb -}}
+# --- OpenRGB needs /dev/i2c-* to see the SMBus RGB devices (DDR5 DIMMs, GPU).
 install_file "etc/modules-load.d/i2c-dev.conf"
-sudo udevadm control --reload
-sudo udevadm trigger
-{{- else -}}
-{{- fail (printf "install-system-files: role %q has systemfiles=true but no GPU drop-in rule is defined for it" .machine) -}}
-{{- end }}
+{{ end -}}
+{{ if $role.nvidia_dm -}}
+# --- niri renders on the NVIDIA GPU: driver profile that stops the freed-buffer
+# VRAM balloon (~1 GiB -> ~100 MiB). Takes effect at the next niri start.
+install_file "etc/nvidia/nvidia-application-profiles-rc.d/50-limit-free-buffer-pool-in-wayland-compositors.json"
+{{ end -}}
 
 echo "Done."
 
@@ -95,10 +89,10 @@ echo "Done."
 {{ range (glob (joinPath .chezmoi.sourceDir "Pictures/Wallpapers/*")) -}}
 #   {{ base . }}  {{ include . | sha256sum }}
 {{ end -}}
-{{ if eq .machine "laptop" -}}
-# 90-hypr-gpu.rules   {{ include "system/etc/udev/rules.d/90-hypr-gpu.rules" | sha256sum }}
-{{- else -}}
-# 90-hypr-gpu-workstation.rules   {{ include "system/etc/udev/rules.d/90-hypr-gpu-workstation.rules" | sha256sum }}
+{{ if $role.rgb -}}
 # i2c-dev.conf        {{ include "system/etc/modules-load.d/i2c-dev.conf" | sha256sum }}
-{{- end }}
+{{ end -}}
+{{ if $role.nvidia_dm -}}
+# nvidia profile      {{ include "system/etc/nvidia/nvidia-application-profiles-rc.d/50-limit-free-buffer-pool-in-wayland-compositors.json" | sha256sum }}
+{{ end -}}
 {{- end }}

@@ -1,0 +1,105 @@
+:experimental:
+
+# niri shortcuts overview
+
+*Reference* : https://github.com/YaLTeR/niri/wiki/Configuration:-Key-Bindings
+
+Source of truth: `dotfiles/dot_config/niri/config.kdl.tmpl` (this sheet mirrors
+its `binds` block). kbd:[Super] is the Mod key. kbd:[Super + Shift + /] shows
+niri's own overlay of these binds at any time.
+
+## Apps
+
+* kbd:[Super + Return] : terminal (ghostty)
+* kbd:[Super + Space] : launcher (Noctalia)
+* kbd:[Super + E] : file manager (Nautilus)
+* kbd:[Super + B] : browser (Chrome)
+* kbd:[Super + V] : VS Code
+* kbd:[Super + S] : Noctalia control center
+* kbd:[Super + N] : Noctalia notification history
+* kbd:[Super + Alt + L] : lock the session
+* kbd:[Alt + Tab] : Noctalia window switcher
+
+## Session
+
+* kbd:[Super + W] : close the focused window
+* kbd:[Super + M] or kbd:[Ctrl + Alt + Delete] : quit niri (asks to confirm)
+* kbd:[Super + Shift + P] : power off the monitors (any input wakes them)
+* kbd:[Super + Escape] : toggle "keyboard shortcuts inhibit" (escape hatch when a remote-desktop app grabs the keys)
+
+## Focus
+
+Left/Right walk the strip of *columns*; Up/Down walk the windows *stacked
+inside* a column.
+
+* kbd:[Super + ←] / kbd:[Super + →], kbd:[Super + h] / kbd:[Super + l], kbd:[Super + a] / kbd:[Super + d] : previous / next column (kbd:[a]/kbd:[d] keep the right hand on the mouse)
+* kbd:[Super + ↑] / kbd:[Super + ↓], kbd:[Super + k] / kbd:[Super + j] : window above / below in the column
+* kbd:[Super + Home] / kbd:[Super + End] : first / last column
+* Mouse: the pointer focuses what it hovers (`focus-follows-mouse`); only windows already fully on screen, so hovering never scrolls the strip
+
+## Move
+
+Same keys with kbd:[Shift].
+
+* kbd:[Super + Shift + ←] / kbd:[Super + Shift + →] (or kbd:[h] / kbd:[l], kbd:[a] / kbd:[d]) : move the column left / right
+* kbd:[Super + Shift + ↑] / kbd:[Super + Shift + ↓] (or kbd:[k] / kbd:[j]) : move the window up / down inside its column
+* kbd:[Super + Shift + Home] / kbd:[Super + Shift + End] : move the column to the first / last position
+* kbd:[Super + LMB drag] : move a window (tiled or floating); kbd:[Super + RMB drag] : resize it
+
+## Columns: stacking, width, size
+
+* kbd:[Super + \[] / kbd:[Super + \]] : pull the window into the column on the left / right (or push it out if it is already stacked)
+* kbd:[Super + ,] : stack the next column under this one
+* kbd:[Super + .] : unstack the bottom window to the right
+* kbd:[Super + R] / kbd:[Super + Shift + R] : cycle the column width 1/3 → 1/2 → 2/3 (and back)
+* kbd:[Super + -] / kbd:[Super + =] : column width -10 % / +10 %
+* kbd:[Super + Shift + -] / kbd:[Super + Shift + =] : window height -10 % / +10 % (stacked windows)
+* kbd:[Super + Ctrl + R] : reset the window height; kbd:[Super + Ctrl + Shift + R] : cycle preset heights
+* kbd:[Super + F] : maximize the column (full width, gaps kept)
+* kbd:[Super + Ctrl + F] : expand the column into the room the other visible columns leave
+* kbd:[Super + Shift + F] : fullscreen the window
+* kbd:[Super + Shift + M] : maximize to the screen edges (no gaps)
+* kbd:[Super + C] : center the column; kbd:[Super + Ctrl + C] : center all visible columns
+* kbd:[Super + T] : toggle floating; kbd:[Super + Shift + T] : switch focus between floating and tiled
+* kbd:[Super + Ctrl + T] : show the column as tabs instead of a stack
+* kbd:[Super + O] : Overview (all workspaces and windows, blurred wallpaper behind)
+
+Widths are per column and never re-split: a new window opens centered at 50 %
+next to whatever is there, and the strip scrolls when it overflows. Press
+kbd:[Super + Ctrl + F] on the new window to make it fill the remaining room.
+
+## Workspaces
+
+Workspaces 1-3 are named and persistent ( 󰊯 ); higher numbers are dynamic
+(niri always keeps one empty workspace at the bottom).
+
+* kbd:[Super + 1] … kbd:[Super + 9], kbd:[Super + 0] : go to workspace 1 … 10
+* kbd:[Super + Shift + 1] … kbd:[Super + Shift + 0] : move the column to that workspace (and follow it)
+* kbd:[Super + PageDown] / kbd:[Super + PageUp] : next / previous workspace
+* kbd:[Super + Shift + PageDown] / kbd:[Super + Shift + PageUp] : move the column to the next / previous workspace
+* kbd:[Super + Tab] : back to the previous workspace
+* kbd:[Super + wheel] : next / previous workspace
+* kbd:[Super + Shift + wheel] : next / previous column
+* kbd:[Super + Ctrl + wheel] : move the column to the next / previous workspace
+* Touchpad: 3-finger swipe left/right scrolls the columns, up/down switches workspaces, 4-finger swipe up opens the Overview (niri built-ins)
+
+## Screenshots
+
+* kbd:[Print] : niri's screenshot UI (select an area, kbd:[Enter] to save, kbd:[Ctrl + C] to copy)
+* kbd:[Ctrl + Print] : whole screen
+* kbd:[Alt + Print] : focused window
+
+Saved under `~/Pictures/Screenshots/`.
+
+## Media keys
+
+Volume, mute, mic mute, play/pause, next/previous go through `noctalia msg`
+so the OSD shows. On the laptop, brightness up/down drive `intel_backlight`.
+
+## Changed from the Hyprland config
+
+* kbd:[Super + F] was the file manager, now kbd:[Super + E]; kbd:[Super + F] maximizes.
+* kbd:[Super + R] was the launcher, now kbd:[Super + Space]; kbd:[Super + R] cycles widths.
+* kbd:[Super + S] / kbd:[Super + Shift + S] (scratchpad) are gone; kbd:[Super + S] opens the control center.
+* kbd:[Super + P] (pseudo) and kbd:[Super + J] (dwindle split) had no meaning in niri; kbd:[Super + J] is now "focus down".
+* Moving uses kbd:[Super + Shift] as before; niri's stock config used kbd:[Super + Ctrl].

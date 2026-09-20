@@ -1,14 +1,14 @@
 :experimental:
 
-# Config files (Arch + Hyprland, and macOS)
+# Config files (Arch + niri, and macOS)
 
 ## Introduction
 
 This directory holds the configuration for my https://www.archlinux.org/[Arch Linux]
 machines: my shell (https://fishshell.com[fish], with https://www.zsh.org/[zsh] as a
 fallback), my terminal (https://ghostty.org[ghostty]), and my Wayland compositor
-(https://hyprland.org[Hyprland]) with the https://github.com/noctalia-dev/noctalia-shell[Noctalia]
-bar/shell.
+(https://github.com/YaLTeR/niri[niri], scrollable tiling) with the
+https://github.com/noctalia-dev/noctalia[Noctalia] bar/shell.
 
 It also covers a macOS machine, which shares the shell / terminal / editor layer
 and skips everything Linux-specific.
@@ -38,15 +38,16 @@ are hardcoded anywhere. The role indexes the `roles` table in
 |===
 |Role |Machine
 
-|`workstation` |Asus X870e / 9950X3D / RTX 5090, Arch + Hyprland
-|`laptop`      |Lenovo Legion Pro 7i Gen 10, Arch + Hyprland
+|`workstation` |Asus X870e / 9950X3D / RTX 5090, Arch + niri
+|`laptop`      |Lenovo Legion Pro 7i Gen 10, Arch + niri
 |`wsl`         |Arch on WSL2 (declared, not yet configured)
 |`macbook`     |MacBook "Neo", Apple Silicon, macOS
 |===
 
 *Add a machine by adding a row to `.chezmoidata.yaml`*, not by adding another
 `{{ if eq .machine "..." }}` branch. Templates branch on the capability flags
-(`os`, `arch`, `systemfiles`, `desktop`, `sysmon`, `rgb`), never on `.machine`
+(`os`, `arch`, `systemfiles`, `desktop`, `sysmon`, `rgb`, `nvidia_dm`, `numlock`,
+`backlight`, plus the `monitor` and `gpu` blocks), never on `.machine`
 directly, because an `{{ else }}` that means "workstation" silently hands a new
 machine the workstation's monitors, GPU and RGB config -- which is exactly the
 bug this table exists to prevent. Where a branch genuinely cannot be
@@ -58,13 +59,16 @@ deploying the wrong tree.
 
 ### Notable pieces
 
-* `hyprland.lua` and `noctalia/config.toml` branch on the role (monitors, GPU,
-  battery/backlight, system-monitor widgets). Both are ignored entirely where
+* `niri/config.kdl` and `noctalia/config.toml` branch on the role (monitor, GPU,
+  backlight, numlock, system-monitor widgets). Both are ignored entirely where
   `desktop` is false.
 * `system/` holds verbatim `/etc` drop-ins that chezmoi can't manage directly (it
   only touches `$HOME`); `.chezmoiscripts/run_onchange_install-system-files.sh.tmpl`
   installs them with `sudo` on `chezmoi apply`, and is a no-op where
   `systemfiles` is false.
+* `.chezmoiscripts/run_after_claude-settings-env.sh.tmpl` merges the two
+  `SSH_ASKPASS` keys into `~/.claude/settings.json` with `jq` on every apply;
+  the file itself stays unmanaged because Claude Code writes to it.
 * `Brewfile` + `run_onchange_darwin-brew-bundle.sh.tmpl` install the macOS
   package set. The Arch equivalent is still the `pacman -S` commands in the wiki.
 * `macos/set-input-sources.swift` + `run_after_darwin-keyboard-layout.sh.tmpl`
@@ -123,26 +127,34 @@ nothing.
 
 ### Desktop
 * https://ghostty.org[ghostty] : terminal (ships a corrected Catppuccin Mocha theme).
-* https://github.com/noctalia-dev/noctalia-shell[Noctalia] : Wayland bar + shell.
-* https://flameshot.org/[Flameshot] : screenshots with editing.
+* https://github.com/YaLTeR/niri[niri] : scrollable-tiling Wayland compositor.
+* https://github.com/noctalia-dev/noctalia[Noctalia] : Wayland bar + shell,
+  polkit agent, lock screen.
+* https://pwmt.org/projects/zathura/[zathura] : PDF/ePub viewer, dark mode.
+* https://rclone.org[rclone] : Google Drive as a FUSE mount (user unit).
 
 ## Layout
 
 `dot_config/` maps to `~/.config`, `dot_zshrc`/`dot_zshenv` to `~/.zshrc`/`~/.zshenv`,
 `dot_local/` to `~/.local`. Highlights:
 
-* `dot_config/hypr/hyprland.lua.tmpl` : Hyprland (machine-templated).
+* `dot_config/niri/config.kdl.tmpl` : niri (machine-templated). The Hyprland
+  predecessor is archived in `../archive/hyprland/`, outside chezmoi.
 * `dot_config/noctalia/config.toml.tmpl` : Noctalia bar (machine-templated).
 * `dot_config/ghostty/` : ghostty config + corrected Catppuccin Mocha theme.
-* `dot_config/{bat,btop,fish,flameshot,tmux}/`, `dot_config/starship.toml` : CLI tools.
+* `dot_config/{bat,btop,fish,flameshot,gdb,tmux,zathura}/`, `dot_config/starship.toml` : CLI tools.
+* `dot_config/systemd/user/` : `openrgb.service`, `rclone-gdrive.service`, and the
+  `gcr-ssh-agent` masks (symlinks to `/dev/null`, the FIDO2 guard).
 * `Library/Application Support/Code/User/` : VSCode settings on macOS (the
   `dot_config/Code/` copy is the Linux one; only one is ever deployed).
 * `dot_config/nvim/` : Neovim config.
 * `dot_config/pipewire/` : PipeWire tweaks.
-* `dot_config/gtk-3.0/bookmarks` : Nautilus sidebar bookmarks.
+* `dot_config/{gtk-3.0,gtk-4.0}/` : Nautilus sidebar bookmarks, dark-theme `settings.ini`.
+* `dot_config/chrome-flags.conf` : Chrome uses gnome-keyring via libsecret.
 * `Pictures/Wallpapers/` : wallpapers (Noctalia's default wallpaper folder).
-* `system/etc/` : `/etc` drop-ins (locale, resolvconf, reflector, pacman hooks, and
-  the Legion-only `90-hypr-gpu.rules`), installed by the run-script.
+* `system/etc/` : `/etc` drop-ins (locale, resolvconf, reflector, pacman hooks,
+  the workstation-only NVIDIA application profile for niri), installed by the
+  run-script.
 * `macos/` : macOS-only helpers that are not `$HOME` files. Currently the Swift
   utility that drives the Text Input Sources API; run from the source tree, never
   deployed.
@@ -152,5 +164,6 @@ nothing.
 
 ## Keybindings
 
+* https://github.com/Jubijub/arch-config/blob/master/keybindings-niri.asciidoc[niri]
 * https://github.com/Jubijub/arch-config/blob/master/keybindings-tmux.asciidoc[tmux]
 * https://github.com/Jubijub/arch-config/blob/master/keybindings-neovim.asciidoc[Neovim]

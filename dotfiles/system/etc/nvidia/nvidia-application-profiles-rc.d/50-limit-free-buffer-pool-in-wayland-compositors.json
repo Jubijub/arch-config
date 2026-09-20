@@ -1,0 +1,15 @@
+{
+    "_comment": "Deployed by chezmoi (system-files run-script). niri's Nvidia wiki page: the driver keeps freed buffers around, so the compositor idles at ~1 GiB of VRAM instead of ~100 MiB. Applied to processes named niri.",
+    "rules": [
+        {
+            "pattern": { "feature": "procname", "matches": "niri" },
+            "profile": "Limit Free Buffer Pool On Wayland Compositors"
+        }
+    ],
+    "profiles": [
+        {
+            "name": "Limit Free Buffer Pool On Wayland Compositors",
+            "settings": [ { "key": "GLVidHeapReuseRatio", "value": 0 } ]
+        }
+    ]
+}

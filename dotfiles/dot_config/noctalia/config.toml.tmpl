@@ -34,10 +34,11 @@ end    = ["tray", "clipboard", "network", "bluetooth", "volume", "brightness", "
 {{- end }}
 
 # The workspaces widget can only render a workspace's `id` or its `name` -- there
-# is no per-workspace icon mapping. So the persistent workspaces in
-# ~/.config/hypr/hyprland.lua are *named* after a Nerd Font glyph (󰆍 󰖟 󰘦) and we
-# display the name verbatim. `max_label_chars = 2` keeps a stray long name from
-# stretching the bar; numeric ids are never truncated.
+# is no per-workspace icon mapping. So the named (persistent) workspaces in
+# ~/.config/niri/config.kdl are *named* after a Nerd Font glyph and we display the
+# name verbatim; niri's dynamic workspaces have no name and show their index.
+# `max_label_chars = 2` keeps a stray long name from stretching the bar; numeric
+# ids are never truncated.
 [widget.workspaces]
 display         = "name"
 max_label_chars = 2
@@ -93,6 +94,21 @@ gpu_poll_seconds = 0
 # this only seeds a machine that has not picked a wallpaper in the GUI yet. On an
 # existing machine, set it with the Noctalia wallpaper picker (or clear the
 # [wallpaper.*] entries in settings.toml first).
+# ── niri integration ──────────────────────────────────────────────────────────
+[shell]
+# niri ships no polkit agent; Noctalia registers one so privilege prompts
+# (pacman GUIs, systemd, ...) get a dialog.
+polkit_agent = true
+# Type in niri's Overview to open the launcher. Off by default upstream because it
+# needs a tiny keyboard-focus layer while the Overview is open; flip to true to try.
+niri_overview_type_to_launch_enabled = false
+
+[backdrop]
+# Blurred copy of the wallpaper behind niri's Overview; the matching
+# `layer-rule { match namespace="^noctalia-backdrop"; place-within-backdrop true }`
+# is in config.kdl.
+enabled = true
+
 [wallpaper.default]
 path = "{{ .chezmoi.homeDir }}/Pictures/Wallpapers/beyond_the_clouds_v01.png"
 
