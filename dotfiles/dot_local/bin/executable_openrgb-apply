@@ -58,7 +58,7 @@
 # full ~15s detection passes off every start.
 #
 # FF0000 = pure red, zero green/blue. Catppuccin's reds all render pink through the
-# diffusers; see the OpenRGB section in wiki 06. (FF4000 is the Windows colour, not
+# diffusers; see the OpenRGB section in wiki 06b. (FF4000 is the Windows colour, not
 # this one.)
 set -uo pipefail
 

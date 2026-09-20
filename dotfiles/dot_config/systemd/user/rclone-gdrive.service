@@ -1,5 +1,5 @@
 # Deployed by chezmoi. Google Drive as a FUSE mount, browsed like a folder in
-# Nautilus (wiki 06, "Google Drive (rclone)"). Enable once by hand:
+# Nautilus (wiki 06b, "Google Drive (rclone)"). Enable once by hand:
 #   systemctl --user enable --now rclone-gdrive.service
 [Unit]
 Description=Google Drive (rclone FUSE mount at %h/GoogleDrive)

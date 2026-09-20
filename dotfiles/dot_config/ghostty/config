@@ -8,3 +8,11 @@ font-family = "IosevkaTerm Nerd Font Mono"
 font-size = 12
 theme = catppuccin-mocha
 keybind = shift+enter=text:\x1b\r
+
+# Translucent background. Only the window background is affected; glyphs stay
+# fully opaque. `background-opacity-cells` would extend it to cells that set
+# their own background (tmux/neovim panes), which repaint the whole area and
+# otherwise stay solid -- left off so those panes remain readable.
+background-opacity = 0.8
+# `background-blur` is deliberately absent: Ghostty only implements it on macOS
+# and KDE Plasma, and niri has no blur, so it would be a no-op here.

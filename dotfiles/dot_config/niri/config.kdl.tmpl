@@ -65,7 +65,7 @@ environment {
     ELECTRON_OZONE_PLATFORM_HINT "auto"
     XCURSOR_SIZE "24"
     // GTK >= 4.20 no longer composes dead keys itself on Wayland; without this
-    // AltGr+` then a gave no à in GTK4 apps with the altgr-intl layout (wiki 06).
+    // AltGr+` then a gave no à in GTK4 apps with the altgr-intl layout (wiki 06b).
     GTK_IM_MODULE "simple"
 {{- if $role.gpu.egl_vendor_json }}
     // Load only this EGL vendor so desktop apps never touch the NVIDIA dGPU.
@@ -169,7 +169,7 @@ window-rule {
 
 // ---------------------------------------------------------------- autostart
 spawn-at-startup "noctalia"
-// aRGB lighting is NOT started here (openrgb.service user unit, wiki 06).
+// aRGB lighting is NOT started here (openrgb.service user unit, wiki 06b).
 // xwayland-satellite is spawned by niri itself on demand (niri >= 25.08).
 
 // ---------------------------------------------------------------- binds

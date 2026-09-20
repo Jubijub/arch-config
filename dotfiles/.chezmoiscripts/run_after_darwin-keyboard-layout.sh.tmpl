@@ -2,7 +2,7 @@
 {{- $role := index .roles .machine }}
 {{- if ne $role.os "darwin" }}
 # Not a macOS machine -- the Linux equivalent is the `us` / `altgr-intl` pair set
-# by localectl (wiki 06) plus the greeter's [keyboard] block in greeter.toml.
+# by localectl (wiki 06b) plus the greeter's [keyboard] block in greeter.toml.
 exit 0
 {{- else }}
 #
