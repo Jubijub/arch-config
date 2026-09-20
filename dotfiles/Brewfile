@@ -49,6 +49,22 @@ brew "ruff"          # python linter/formatter
 brew "stylua"        # lua formatter
 brew "node"          # prettier/prettierd, and Mason's npm-based installers
 
+# ── C / C++ (algorithms books, see wiki 07.Dev-environment) ──────────────────
+# The Xcode CLT already provide clang/clang++ (as `gcc`/`g++` too) and lldb;
+# these add the GNU toolchain the wiki's examples are written against.
+brew "gcc"           # installs gcc-16 / g++-16 -- plain `gcc` and `g++` stay
+                     # Apple clang, so call the versioned names explicitly
+brew "gdb"           # parity with the Arch machines, but of limited use here:
+                     # gdb has no native aarch64-darwin target and needs a
+                     # codesigned binary to touch Mach ports. lldb (from the
+                     # CLT) is the debugger that works on Neo -- see wiki 07.
+brew "cmake"         # both driven by VSCode's CMake Tools, part of the
+brew "ninja"         # C/C++ extension pack
+brew "clang-format"  # not shipped with the CLT
+
+# valgrind is deliberately absent: it has no Apple Silicon support at all (the
+# formula has no arm64 bottle). Use -fsanitize=address,undefined instead.
+
 # ── Docs ─────────────────────────────────────────────────────────────────────
 brew "asciidoctor"   # renders the wiki (.asciidoc) locally
 
