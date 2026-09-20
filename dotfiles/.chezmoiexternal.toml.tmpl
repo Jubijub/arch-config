@@ -26,3 +26,13 @@
     url = "https://raw.githubusercontent.com/carjorvaz/macos-us-altgr-intl/master/us-altgr-intl.keylayout"
     refreshPeriod = "168h"
 {{- end }}
+
+{{- if $role.desktop }}
+# Catppuccin Mocha for zathura. Upstream ships one plain file of `set` lines per
+# flavour; zathurarc includes it. Kept as an external rather than vendored so a
+# palette fix upstream reaches us on the next refresh.
+[".config/zathura/catppuccin-mocha"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/catppuccin/zathura/main/themes/catppuccin-mocha"
+    refreshPeriod = "168h"
+{{- end }}

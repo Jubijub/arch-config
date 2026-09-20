@@ -41,12 +41,15 @@ vscode-extensions.txt
 # Wayland / Hyprland desktop session. Nothing here means anything on a headless
 # Arch (WSL) or on macOS.
 {{ if not $role.desktop -}}
-.config/hypr
+.config/niri
 .config/noctalia
 .config/pipewire
 .config/flameshot
 .config/gtk-3.0
+.config/gtk-4.0
 .config/systemd
+.config/zathura
+.config/chrome-flags.conf
 Pictures
 {{ end -}}
 
@@ -55,6 +58,7 @@ Pictures
 # shared partial (.chezmoitemplates/vscode-settings.json).
 {{ if eq $role.os "darwin" -}}
 .config/Code
+.config/gdb
 {{ else -}}
 Library
 {{ end -}}

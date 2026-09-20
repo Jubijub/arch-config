@@ -1,0 +1,10 @@
+# Deployed by chezmoi (dotfiles/dot_config/gdb/gdbinit). gdb >= 11 reads
+# ~/.config/gdb/gdbinit.
+set print pretty on
+set print array on
+set pagination off
+set history save on
+set history filename ~/.local/state/gdb_history
+# Arch runs debuginfod.archlinux.org: fetch libc & co. symbols instead of being
+# asked about it at every start.
+set debuginfod enabled on

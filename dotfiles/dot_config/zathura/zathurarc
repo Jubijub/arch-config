@@ -1,0 +1,16 @@
+# Deployed by chezmoi. The theme file next to this one is a chezmoi external
+# (catppuccin/zathura, see .chezmoiexternal.toml.tmpl); it sets recolor=true and
+# the light/dark colours (Base / Text).
+include catppuccin-mocha
+
+# Dark mode
+set recolor-keephue true          # keep colour hues, only remap light/dark
+set recolor-reverse-video true    # leave images alone instead of inverting them
+map i recolor                     # toggle dark mode per document
+
+set selection-clipboard clipboard
+set adjust-open "best-fit"
+set window-title-basename true
+set statusbar-home-tilde true
+set font "Iosevka NF 11"
+set guioptions ""                 # no status/command bar until needed (":" brings it back)

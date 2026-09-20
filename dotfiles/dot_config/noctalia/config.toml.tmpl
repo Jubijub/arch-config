@@ -17,10 +17,12 @@ center = ["clock"]
 {{ if $role.sysmon -}}
 # workstation (takemyheataway): mains-powered, so the battery reason to omit sysmon
 # does not apply -- the stats block leads the end lane, ahead of tray/indicators/
-# session. No laptop panel backlight and no battery here, so "brightness" and
+# session. Only three stats are on the bar (CPU load, CPU temp, GPU temp): hovering
+# any sysmon widget shows all the others, so RAM/disk/network do not need their own
+# pill. No laptop panel backlight and no battery here, so "brightness" and
 # "battery" are dropped.
 start  = ["launcher", "workspaces"]
-end    = ["sysmon-cpu", "sysmon-cpu-temp", "sysmon-ram", "sysmon-gpu", "sysmon-gpu-temp", "sysmon-disk", "sysmon-net-rx", "sysmon-net-tx", "tray", "clipboard", "network", "bluetooth", "volume", "control-center", "notifications", "session"]
+end    = ["sysmon-cpu", "sysmon-cpu-temp", "sysmon-gpu-temp", "tray", "clipboard", "network", "bluetooth", "volume", "control-center", "notifications", "session"]
 {{- else -}}
 # laptop: no "sysmon" widget here on purpose. The system-monitor widget is what
 # starts noctalia's SystemMonitorService, which on this hybrid laptop probes the
@@ -40,12 +42,13 @@ end    = ["tray", "clipboard", "network", "bluetooth", "volume", "brightness", "
 display         = "name"
 max_label_chars = 2
 scale      = 1.4
-pill_scale = 1.2
+pill_scale = 1.0   # validator maximum is 1
 {{ if $role.sysmon }}
 # ── System monitor widgets (workstation only) ─────────────────────────────────
 # Each of these is a named `sysmon` instance showing exactly one `stat`; the names
 # are referenced from bar.default.end above. Valid stats: cpu_usage, cpu_temp,
 # ram_pct, swap_pct, gpu_usage, gpu_temp, gpu_vram, disk_pct, net_rx, net_tx.
+# Only three instances exist on purpose (hover shows the rest).
 #
 # `display` is gauge (default) | graph | text. The gauge draws a 0-100% ring, which
 # is right for the usage percentages but meaningless for temperatures and network
@@ -62,37 +65,12 @@ type          = "sysmon"
 stat          = "cpu_temp"
 display       = "text"
 
-[widget.sysmon-ram]
-type = "sysmon"
-stat = "ram_pct"
-
-# gpu_usage / gpu_temp only report anything if [system.monitor] gpu_poll_seconds
-# is non-zero -- see below.
-[widget.sysmon-gpu]
-type = "sysmon"
-stat = "gpu_usage"
-
+# gpu_temp only reports anything if [system.monitor] gpu_poll_seconds is non-zero
+# -- see below.
 [widget.sysmon-gpu-temp]
 type          = "sysmon"
 stat          = "gpu_temp"
 display       = "text"
-
-[widget.sysmon-disk]
-type = "sysmon"
-stat = "disk_pct"
-path = "/"
-
-[widget.sysmon-net-rx]
-type                  = "sysmon"
-stat                  = "net_rx"
-display               = "text"
-network_speed_compact = true
-
-[widget.sysmon-net-tx]
-type                  = "sysmon"
-stat                  = "net_tx"
-display               = "text"
-network_speed_compact = true
 {{ end }}
 [system.monitor]
 {{- if $role.sysmon }}

@@ -3,5 +3,7 @@
     "workbench.colorTheme": "Catppuccin Mocha",
     "python.defaultInterpreterPath": "{{ if eq $role.os "darwin" }}/usr/bin/python3{{ else }}/bin/python{{ end }}",
     "editor.fontFamily": "'Iosevka NF', 'monospace', monospace",
-    "claudeCode.preferredLocation": "panel"
+    "claudeCode.preferredLocation": "panel",
+    "C_Cpp.default.cStandard": "c23",
+    "C_Cpp.default.cppStandard": "c++23"
 }

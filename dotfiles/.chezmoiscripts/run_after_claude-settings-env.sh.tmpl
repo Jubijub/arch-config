@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+#
+# Keeps SSH_ASKPASS / SSH_ASKPASS_REQUIRE in the `env` block of
+# ~/.claude/settings.json (wiki 08, "Non-interactive use"). The file itself is
+# NOT chezmoi-managed -- Claude Code writes to it (/config, accepted dialogs) and
+# a managed copy would revert those on every apply. So this merges exactly two
+# keys with jq and leaves everything else alone.
+#
+# run_after_ (not run_onchange_): it runs on every `chezmoi apply`, is idempotent
+# and silent when nothing changes, so a hand-deleted key comes back.
+set -euo pipefail
+
+SETTINGS="{{ .chezmoi.homeDir }}/.claude/settings.json"
+# Absolute on purpose: values in that env block are literal, neither ~ nor $HOME
+# is expanded, which is why this is templated per machine.
+ASKPASS="{{ .chezmoi.homeDir }}/.local/bin/ssh-askpass"
+
+if ! command -v jq >/dev/null 2>&1; then
+    echo "claude-settings-env: jq not found (yay -S jq / brew install jq)" >&2
+    exit 1
+fi
+
+mkdir -p "$(dirname "$SETTINGS")"
+[ -s "$SETTINGS" ] || echo '{}' > "$SETTINGS"
+
+if jq -e --arg p "$ASKPASS" \
+      '(.env.SSH_ASKPASS == $p) and (.env.SSH_ASKPASS_REQUIRE == "force")' \
+      "$SETTINGS" >/dev/null; then
+    exit 0
+fi
+
+tmp="$(mktemp "${SETTINGS}.XXXXXX")"
+jq --arg p "$ASKPASS" \
+   '.env = ((.env // {}) + {SSH_ASKPASS: $p, SSH_ASKPASS_REQUIRE: "force"})' \
+   "$SETTINGS" > "$tmp"
+mv "$tmp" "$SETTINGS"
+echo "claude-settings-env: merged SSH_ASKPASS into $SETTINGS (takes effect on the next Claude Code session)"

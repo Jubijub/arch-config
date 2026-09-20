@@ -12,8 +12,9 @@ PIN and a physical touch on the key.
 This *does* work from a non-interactive shell, as long as `SSH_ASKPASS` points at
 `~/.local/bin/ssh-askpass` and `SSH_ASKPASS_REQUIRE=force` is set. ssh then asks
 for the PIN in a graphical dialog rather than on a terminal it does not have.
-Both are set for Claude Code sessions in `~/.claude/settings.json`, and the
-helper is deployed by chezmoi. The touch is still required and still physical,
+Both live in the `env` block of `~/.claude/settings.json`, kept there by
+chezmoi's `run_after_claude-settings-env` script; the helper is deployed by
+chezmoi too. The touch is still required and still physical,
 so nothing is signed or pushed without a deliberate tap on the key.
 
 If a git command fails with `agent refused operation` or

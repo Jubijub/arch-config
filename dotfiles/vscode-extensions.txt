@@ -25,6 +25,9 @@ tamasfe.even-better-toml
 
 # Rust
 rust-lang.rust-analyzer
+
+# C / C++
+ms-vscode.cpptools-extension-pack               # C/C++ (IntelliSense, gdb debugging), CMake Tools, C/C++ themes
 # NOTE: serayuzgur.crates was dropped -- the extension is deprecated.
 
 # Theme
